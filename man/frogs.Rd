@@ -6,10 +6,8 @@
 
 \title{frogs dataset}
 
-\description{Presence or absence of 9 species of frogs on 104 sites, 3 covariates   collected on those site and their coordinates.
+\description{Presence or absence of 9 species of frogs at 104 sites, 3 covariates collected  at these sites and their coordinates.
 }
-
-\usage{frogs}
 
 \format{
   \code{frogs} is a data frame with 104 observations on the following 14 variables.
@@ -23,7 +21,7 @@
 }
 
 \source{
-Wilkinson, D. P.; Golding, N.; Guillera-Arroita, G.; Tingley, R. and McCarthy, M. A. (2018) \emph{A comparison of joint species distribution models for presence-absence data.} Methods in Ecology and Evolution.}
+Wilkinson, D. P.; Golding, N.; Guillera-Arroita, G.; Tingley, R. and McCarthy, M. A. (2018) A comparison of joint species distribution models for presence-absence data. \emph{Methods in Ecology and Evolution}.}
 
 \examples{
 data(frogs, package="jSDM")

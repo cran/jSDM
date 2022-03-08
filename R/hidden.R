@@ -27,7 +27,7 @@ calling.function <- function(parentheses=TRUE) {
 # =======================================================================
 
 check.mcmc.parameters <- function(burnin, mcmc, thin) {
-    
+  
   if(mcmc %% thin != 0) {
     cat("Error: MCMC iterations not evenly divisible by thinning interval.\n")
     stop("Please respecify and call ", calling.function(), " again.",
@@ -187,7 +187,7 @@ check.T.binomial <- function (T,nobs) { # = This version of the function assumes
 
 check.Y.binomial <- function (Y,T) {
   if(!is.numeric(Y)) {
-    cat("Error: 'presences' must be a vector of numeric values.\n")
+    cat("Error: 'presences' must be a vector or a matrix of numeric values.\n")
     stop("Please respecify and call ", calling.function(), " again.",
          call.=FALSE)
   }
@@ -225,7 +225,7 @@ check.U <- function (U,nobs) {
     stop("Please respecify and call ", calling.function(), " again.",
          call.=FALSE)
   }
-  if (!all(U>=0 & U<=1)) {
+  if (!all(U>=0 && U<=1)) {
     cat("Error: 'alteration' must be in the interval [0,1].\n")
     stop("Please respecify and call ", calling.function(), " again.",
          call.=FALSE)
@@ -415,7 +415,7 @@ form.beta.start <- function (beta.start,np) {
   if (sum(is.na(beta.start))>0) { 
     beta.start <- rep(0,np)
   }
-  else if(!is.na(beta.start)[1] & length(beta.start)!=np) {
+  else if(!is.na(beta.start)[1] && length(beta.start)!=np) {
     beta.start <- rep(beta.start[1],np) 
   }
   else if(length(beta.start)!=np) {
@@ -430,7 +430,7 @@ form.gamma.start <- function (gamma.start,nq) {
   if (sum(is.na(gamma.start))>0) { 
     gamma.start <- rep(0,nq)
   }
-  else if(!is.na(gamma.start)[1] & length(gamma.start)!=nq) {
+  else if(!is.na(gamma.start)[1] && length(gamma.start)!=nq) {
     gamma.start <- rep(gamma.start[1],nq)  
   }
   else if(length(gamma.start)!=nq) {
@@ -465,18 +465,6 @@ check.Vrho.start <- function (Vrho.start) {
 # Check and form priors
 #
 # =======================================================================
-
-check.mubeta <- function(mubeta, np) {
-  if (is.null(dim(mubeta))) {
-    mubeta <- rep(mubeta,np) 
-  }
-  else if (length(mubeta)!=np) {
-    cat("Error: mubeta not conformable.\n")
-    stop("Please respecify and call ", calling.function(), " again.",
-         call.=FALSE)
-  }
-  return(mubeta)
-}
 
 check.Vbeta <- function(Vbeta, np) {
   if (!all(Vbeta>0)) {
@@ -525,7 +513,7 @@ check.Vgamma <- function(Vgamma, nq) {
 }
 
 check.ig.prior <- function(nu, delta) {
-     
+  
   if(nu <= 0) {
     cat("Error: in IG(nu,delta) prior, nu less than or equal to zero.\n")
     stop("Please respecify and call ", calling.function(), " again.\n",
@@ -559,7 +547,7 @@ check.Vrho.max <- function (Vrho.max) {
 }
 
 form.priorVrho <- function (priorVrho) {
-  if (is.numeric(priorVrho[1]) & priorVrho[1] > 0.0) {
+  if (is.numeric(priorVrho[1]) && priorVrho[1] > 0.0) {
     priorVrho <- priorVrho[1]
   }
   else if (priorVrho=="Uniform") {
@@ -577,7 +565,7 @@ form.priorVrho <- function (priorVrho) {
 
 # =======================================================================
 #
-# Check and form starting parameters for jSDM_probit_block
+# Check and form starting parameters for jSDM_binomial_probit
 #
 # =======================================================================
 
@@ -585,17 +573,69 @@ is.scalar <- function(x) {
   is.atomic(x) && length(x) == 1L
 }
 
+form.gamma.start.mat <- function(gamma.start,nt,np){
+  if(!all(!is.na(gamma.start))){
+    cat("Error: gamma_start must no contain missing values.\n")
+    stop("Please respecify and call ", calling.function(), " again.",
+         call.=FALSE)
+  }
+  else if(is.null(dim(gamma.start))){
+    if(is.vector(gamma.start)){
+      if(length(gamma.start)==(np*nt) || length(gamma.start)==nt || length(gamma.start)==1){
+        gamma.start.mat <- matrix(gamma.start,nt,np) 
+      }
+      else if(length(gamma.start)==np){
+        gamma.start.mat <- matrix(gamma.start,nt,np, byrow=TRUE) 
+      }
+      else if(sum(c(np,nt,np*nt,1)==length(gamma.start))==0){
+        cat("Error: gamma_start not conformable, you can specify a vector of length np=", np,
+            "(number of covariates plus intercept), nt=", nt,
+            "(number of traits plus intercept) or np.nt=", np*nt, "to fill matrix gamma_start.\n")
+        stop("Please respecify and call ", calling.function(), " again.",
+             call.=FALSE)
+      }
+    }
+  }
+  else if(sum(dim(gamma.start)==c(nt,np))==2){
+    gamma.start.mat <- gamma.start
+  }
+  else if(sum(dim(gamma.start)==c(nt,np))!=2){
+    cat("Error: gamma_start not conformable, should form a matrix of size (number of traits plus intercept) nt x np (number of covariates plus intercept) :"
+        , nt," x", np,". \n")
+    stop("Please respecify and call ", calling.function(), " again.",
+         call.=FALSE)
+  }
+  return(gamma.start.mat)
+}
+
 form.beta.start.sp <- function (beta.start, np, nsp) {
+  if (sum(dim(beta.start) != c(np,nsp))==0 && sum(is.na(beta.start))==0) { 
+    beta.start.mat <- beta.start 
+  }
   if (sum(is.na(beta.start))>0) { 
     beta.start.mat <- matrix(0, np, nsp)
   }
-  else if(is.scalar(beta.start) & !is.na(beta.start)) {
+  else if(is.scalar(beta.start) && sum(is.na(beta.start))==0) {
     beta.start.mat <- matrix(beta.start, np, nsp) 
   }
   else if(sum(dim(beta.start) != c(np, nsp)) > 0) {
-    stop("Error: beta.start not conformable.\n")
+    stop("Error: beta.start not conformable. \n Please respecify and call ", calling.function(), " again.\n",
+         call.=FALSE)
   }
   return(beta.start.mat)
+}
+
+form.b.start <- function (b.start, nd) {
+  if (sum(is.na(b.start))>0) { 
+    b.start.vec <- rep(0,nd)
+  }
+  else if(is.scalar(b.start) && !is.na(b.start)) {
+    b.start.vec <- rep(b.start, nd) 
+  }
+  else if(sum(length(b.start) != nd) > 0) {
+    stop("Error: b.start not conformable.\n")
+  }
+  return(b.start.vec)
 }
 
 form.lambda.start.sp <- function (lambda.start, n_latent, nsp) {
@@ -605,7 +645,7 @@ form.lambda.start.sp <- function (lambda.start, n_latent, nsp) {
       lambda.start.mat[i, i] <- 1
     }
   }
-  else if(is.scalar(lambda.start) & !is.na(lambda.start)) {
+  else if(is.scalar(lambda.start) && sum(is.na(lambda.start))==0) {
     lambda.start.mat <- matrix(lambda.start, n_latent, nsp)
     for (i in 1:n_latent) {
       if (lambda.start > 0) {
@@ -615,7 +655,7 @@ form.lambda.start.sp <- function (lambda.start, n_latent, nsp) {
       }
       for (j in 1:n_latent) {
         if (i > j) {
-         lambda.start.mat[i, j] <- 0
+          lambda.start.mat[i, j] <- 0
         }
       }
     }
@@ -623,14 +663,15 @@ form.lambda.start.sp <- function (lambda.start, n_latent, nsp) {
   else if(sum(dim(lambda.start) != c(n_latent, nsp)) > 0) {
     stop("Error: lambda.start not conformable.\n")
   }
-  else if(sum(dim(lambda.start) != c(n_latent, nsp)) == 0) {
+  else if(sum(dim(lambda.start) != c(n_latent, nsp)) == 0 && sum(is.na(lambda.start))==0) {
+    lambda.start.mat <- lambda.start
     for (i in 1:n_latent) {
       if (lambda.start.mat[i, i]<=0) {
         stop("Error: lambda must be positive on the diagonal.\n")
       }
       for (j in 1:n_latent) {
-        if (i > j & lambda.start.mat[i, j] != 0) {
-          stop("Error: lambda must be constrained to zero on lower diagonal.\n")
+        if (i > j && lambda.start.mat[i, j] != 0) {
+          stop("Error: lambda_start must be an upper triangular matrix, values should be constrained to zero on lower diagonal.\n")
         }
       }
     }
@@ -642,7 +683,7 @@ form.alpha.start.sp <- function (alpha.start, nsite) {
   if (sum(is.na(alpha.start))>0) { 
     alpha.start <- rep(0, nsite)
   }
-  else if(is.scalar(alpha.start) & !is.na(alpha.start)) {
+  else if(is.scalar(alpha.start) && !is.na(alpha.start)) {
     alpha.start <- rep(alpha.start, nsite) 
   }
   else if(length(alpha.start) != nsite ) {
@@ -652,10 +693,13 @@ form.alpha.start.sp <- function (alpha.start, nsite) {
 }
 
 form.W.start.sp <- function (W.start, nsite, n_latent) {
+  if (sum(dim(W.start) == c(nsite, n_latent))==2 && sum(is.na(W.start))==0) { 
+    W.start.mat <- W.start
+  }
   if (sum(is.na(W.start))>0) { 
     W.start.mat <- matrix(0, nsite, n_latent)
   }
-  else if(is.scalar(W.start) & !is.na(W.start)) {
+  else if(is.scalar(W.start) && !is.na(W.start)) {
     W.start.mat <- matrix(W.start, nsite, n_latent) 
   }
   else if(sum(dim(W.start) != c(nsite, n_latent)) > 0) {
@@ -664,11 +708,91 @@ form.W.start.sp <- function (W.start, nsite, n_latent) {
   return(W.start.mat)
 }
 #==================================================================
-# Check and form priors for jSDM_probit_block
+# Check and form priors for jSDM_binomial_probit
 #==================================================================
-check.mubeta <- function(mubeta, np) {
-  if (is.null(dim(mubeta))) {
-    mubeta <- rep(mubeta,np) 
+check.mugamma.mat <- function(mugamma,nt,np){
+  if(!all(!is.na(mugamma))){
+    cat("Error: mu_gamma must no contain missing values.\n")
+    stop("Please respecify and call ", calling.function(), " again.",
+         call.=FALSE)
+  }
+  else if(is.null(dim(mugamma))){
+    if(is.vector(mugamma)){
+      if(length(mugamma)==(np*nt) || length(mugamma)==nt || length(mugamma)==1){
+        mugamma.mat <- matrix(mugamma,nt,np) 
+      }
+      else if(length(mugamma)==np){
+        mugamma.mat <- matrix(mugamma,nt,np, byrow=TRUE) 
+      }
+      else if(sum(c(np,nt,np*nt,1)==length(mugamma))==0){
+        cat("Error: mu_gamma not conformable, you can specify a vector of length np=", np,
+            "(number of covariates plus intercept), nt=", nt,
+            "(number of traits plus intercept) or np.nt=", np*nt, "to fill matrix mu_gamma.\n")
+        stop("Please respecify and call ", calling.function(), " again.",
+             call.=FALSE)
+      }
+    }
+  }
+  else if(sum(dim(mugamma)==c(nt,np))==2){
+    mugamma.mat <- mugamma
+  }
+  else if(sum(dim(mugamma)==c(nt,np))!=2){
+    cat("Error: mu_gamma not conformable, should form a matrix of size (number of traits plus intercept) nt x np (number of covariates plus intercept) :"
+        , nt," x", np,". \n")
+    stop("Please respecify and call ", calling.function(), " again.",
+         call.=FALSE)
+  }
+  return(mugamma.mat)
+}
+
+check.Vgamma.mat <- function(Vgamma,nt,np){
+  if(!all(!is.na(Vgamma))){
+    cat("Error: V_gamma must no contain missing values.\n")
+    stop("Please respecify and call ", calling.function(), " again.",
+         call.=FALSE)
+  }
+  if (!all(Vgamma>=0)) {
+    cat("Error: V_gamma should be positive.\n")
+    stop("Please respecify and call ", calling.function(), " again.",
+         call.=FALSE)
+  }
+  else if (is.null(dim(Vgamma))) {
+    if(is.vector(Vgamma)){
+      if(length(Vgamma)==(np*nt) || length(Vgamma)==nt || length(Vgamma)==1){
+        Vgamma.mat <- matrix(Vgamma,nt,np)
+      }
+      else if(length(Vgamma)==np){
+        Vgamma.mat <- matrix(Vgamma,nt,np, byrow=TRUE)
+      }
+      else if(sum(c(np,nt,np*nt,1)==length(Vgamma))==0){
+        cat("Error: V_gamma not conformable, you can specify a vector of length np=", np,
+            "(number of covariates plus intercept), nt=", nt,
+            "(number of traits plus intercept) or nt.np=", nt*np, "to fill matrix V_gamma.\n")
+        stop("Please respecify and call ", calling.function(), " again.",
+             call.=FALSE)
+      }
+    }
+  }
+  else if(sum(dim(Vgamma)==c(nt,np))==2){
+    Vgamma.mat <- Vgamma
+  }
+  else if(sum(dim(Vgamma)==c(nt,np))!=2){
+    cat("Error: V_gamma not conformable, should form a matrix of size (number of traits plus intercept) nt x np (number of covariates plus intercept) :",
+        nt,"x", np,". \n")
+    stop("Please respecify and call ", calling.function(), " again.",
+         call.=FALSE)
+  }
+  return(Vgamma.mat)
+}
+
+check.mubeta <- function(mubeta, np){
+  if (is.null(dim(mubeta))){
+    if(is.scalar(mubeta)){
+      mubeta <- rep(mubeta,np) 
+    }
+    else if(is.vector(mubeta) && length(mubeta)==np){
+      mubeta <- mubeta
+    }
   }
   else if (length(mubeta)!=np) {
     cat("Error: mubeta not conformable.\n")
@@ -679,25 +803,80 @@ check.mubeta <- function(mubeta, np) {
 }
 
 check.Vbeta.mat <- function(Vbeta, np) {
-  if (!all(Vbeta>0)) {
-    cat("Error: Vbeta should be strictly positive.\n")
+  if (sum(dim(Vbeta)==c(np,np))==2){
+    if (!all(diag(Vbeta)>0) && sum(is.na(Vbeta))!=0) {
+      cat("Error: V_beta should be strictly positive on diagonal.\n")
+      stop("Please respecify and call ", calling.function(), " again.",
+           call.=FALSE)
+    }
+    Vbeta.mat <- Vbeta
+  }
+  else if (!all(Vbeta>0) && sum(is.na(Vbeta))!=0) {
+    cat("Error: V_beta should be strictly positive on diagonal.\n")
     stop("Please respecify and call ", calling.function(), " again.",
          call.=FALSE)
   }
-  if (is.null(dim(Vbeta))) {
-    Vbeta <- diag(rep(Vbeta,np))
+  if (is.null(dim(Vbeta))){
+    if(is.scalar(Vbeta)){
+      Vbeta.mat <- matrix(0,np,np)
+      diag(Vbeta.mat) <- Vbeta 
+    }
+    else if(is.vector(Vbeta)){
+      if(length(Vbeta)==np){
+        Vbeta.mat <- matrix(0,np,np)
+        diag(Vbeta.mat) <- Vbeta 
+      } else{
+        cat("Error: V_beta not conformable, you must specify a ", np,"-length vector to fill the diagonal of the square matrix", np,"x",np,".\n")
+        stop("Please respecify and call ", calling.function(), " again.",
+             call.=FALSE) 
+      }
+    }
   }
   else if (sum(dim(Vbeta) != c(np, np)) > 0) {
-    cat("Error: Vbeta not conformable.\n")
+    cat("Error: V_beta not conformable, should form a square matrix", np,"x",np,".\n")
     stop("Please respecify and call ", calling.function(), " again.",
          call.=FALSE)
   }
-  return(Vbeta)
+  return(Vbeta.mat)
+}
+
+check.mub <- function(mub, nd) {
+  if (is.null(dim(mub))) {
+    mub <- rep(mub,nd) 
+  }
+  else if (length(mub)!=nd) {
+    cat("Error: mu_b not conformable.\n")
+    stop("Please respecify and call ", calling.function(), " again.",
+         call.=FALSE)
+  }
+  return(mub)
+}
+
+check.Vb.mat <- function(Vb, nd) {
+  if (!all(Vb>0)) {
+    cat("Error: V_b should be strictly positive.\n")
+    stop("Please respecify and call ", calling.function(), " again.",
+         call.=FALSE)
+  }
+  if (is.null(dim(Vb))) {
+    Vb <- diag(rep(Vb,nd))
+  }
+  else if (sum(dim(Vb) != c(nd, nd)) > 0) {
+    cat("Error: V_b not conformable.\n")
+    stop("Please respecify and call ", calling.function(), " again.",
+         call.=FALSE)
+  }
+  return(Vb)
 }
 
 check.mulambda <- function(mulambda, n_latent) {
   if (is.null(dim(mulambda))) {
-    mulambda <- rep(mulambda,n_latent) 
+    if(is.scalar(mulambda)){
+      mulambda <- rep(mulambda,n_latent)
+    }
+    else if(is.vector(mulambda) && length(mulambda)==n_latent){
+      mulambda <- mulambda
+    }
   }
   else if (length(mulambda)!=n_latent) {
     cat("Error: mulambda not conformable.\n")
@@ -708,18 +887,54 @@ check.mulambda <- function(mulambda, n_latent) {
 }
 
 check.Vlambda.mat <- function(Vlambda, n_latent) {
-  if (!all(Vlambda>0)) {
+  
+  if (sum(dim(Vlambda)==c(n_latent,n_latent))==2) {
+    if (!all(diag(Vlambda)>0) && sum(is.na(Vlambda))!=0) {
+      cat("Error: V_lambda should be strictly positive on diagonal.\n")
+      stop("Please respecify and call ", calling.function(), " again.",
+           call.=FALSE)
+    }
+    Vlambda.mat <- Vlambda
+  }
+  else if (!all(Vlambda>0) && sum(is.na(Vlambda))!=0) {
     cat("Error: Vlambda should be strictly positive.\n")
     stop("Please respecify and call ", calling.function(), " again.",
          call.=FALSE)
   }
   if (is.null(dim(Vlambda))) {
-    Vlambda <- diag(rep(Vlambda,n_latent))
+    if(is.scalar(Vlambda)){
+      if(n_latent==1){
+        Vlambda.mat <- as.matrix(Vlambda)
+      }else {
+        Vlambda.mat <- diag(rep(Vlambda,n_latent))
+      }
+    }
+    else if(is.vector(Vlambda) && length(Vlambda)==n_latent){
+      Vlambda.mat <- diag(Vlambda)
+    }
   }
   else if (sum(dim(Vlambda) != c(n_latent, n_latent)) > 0) {
     cat("Error: Vlambda not conformable.\n")
     stop("Please respecify and call ", calling.function(), " again.",
          call.=FALSE)
+  }
+  return(Vlambda.mat)
+}
+
+check.Vlambda <- function(Vlambda, n_latent) {
+  if (!all(Vlambda>0) && sum(is.na(Vlambda))!=0) {
+    cat("Error: Vlambda should be strictly positive.\n")
+    stop("Please respecify and call ", calling.function(), " again.", call.=FALSE)
+  }
+  if (is.scalar(Vlambda)) {
+    Vlambda <- rep(Vlambda,n_latent)
+  }
+  else if (length(Vlambda)!=n_latent){
+    cat("Error: Vlambda not conformable.\n")
+    stop("Please respecify and call ", calling.function(), " again.",call.=FALSE)
+  }
+  if(!is.null(dim(Vlambda)) && length(Vlambda)==n_latent){
+    Vlambda <- as.vector(Vlambda)
   }
   return(Vlambda)
 }

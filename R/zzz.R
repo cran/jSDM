@@ -7,21 +7,16 @@
 ##
 ## Copyright (C) 2011-present Ghislain Vieilledent
 ## 
-##########################################################################
+#########################################################################
 
 .onAttach <- function(...) {
-   # echo output to screen
-   packageStartupMessage("##\n## jSDM R package \n",
-                         "## For joint species distribution models \n",
-   					     "## https://ecology.ghislainv.fr/jSDM \n",
-                         "##\n")
+  # echo output to screen
+  packageStartupMessage("##\n## jSDM R package \n",
+                        "## For joint species distribution models \n",
+                        "## https://ecology.ghislainv.fr/jSDM \n",
+                        "##\n")
 }
 
 .onUnload <- function(libpath) {
-    library.dynam.unload("jSDM", libpath)
+  library.dynam.unload("jSDM", libpath)
 }
-
-
-
-
-
