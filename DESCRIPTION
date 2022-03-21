@@ -1,8 +1,8 @@
 Package: jSDM
 Type: Package
 Title: Joint Species Distribution Models
-Version: 0.2.0
-Date: 2022-03-04
+Version: 0.2.1
+Date: 2022-03-16
 Imports: Rcpp (>= 1.0.0), graphics, stats, coda, corrplot, stringi,
         MASS, parallel, doParallel, foreach
 LinkingTo: Rcpp, RcppArmadillo, RcppGSL
@@ -35,10 +35,10 @@ LazyLoad: yes
 Encoding: UTF-8
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr
-Packaged: 2022-03-08 00:13:47 UTC; clement
+Packaged: 2022-03-18 13:04:26 UTC; clement
 Author: Jeanne Clément [aut, cre] (<https://orcid.org/0000-0002-5228-5015>),
   Ghislain Vieilledent [aut] (<https://orcid.org/0000-0002-1685-4997>),
   Frédéric Gosselin [ctb] (<https://orcid.org/0000-0003-3737-106X>),
   CIRAD [cph, fnd]
 Repository: CRAN
-Date/Publication: 2022-03-08 08:40:11 UTC
+Date/Publication: 2022-03-21 08:30:17 UTC

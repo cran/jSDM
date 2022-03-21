@@ -75,26 +75,27 @@ mod<-jSDM_binomial_probit(# Response variable
                            W_start=0,
                            V_alpha=1,
                            # Priors
-                           shape=0.5, rate=0.0005,
-                           mu_beta=0, V_beta=1.0E6,
-                           mu_lambda=0, V_lambda=10,
+                           shape=0.1, rate=0.1,
+                           mu_beta=0, V_beta=1,
+                           mu_lambda=0, V_lambda=1,
                            # Various
                            seed=1234, verbose=1)
-# Representation of residual correlation between species 
+# Representation of residual correlation between species
 plot_residual_cor(mod)
+plot_residual_cor(mod, prob=0.95)
 }
 \references{
-\tabular{l}{
-Taiyun Wei and Viliam Simko (2017). R package "corrplot": Visualization of a Correlation Matrix (Version 0.84) \cr
-Warton, D. I.; Blanchet, F. G.; O'Hara, R. B.; O'Hara, R. B.; Ovaskainen, O.; Taskinen, S.; Walker, S. C. and Hui, F. K. C. (2015) So Many Variables: Joint Modeling in Community Ecology. \emph{Trends in Ecology & Evolution}, 30, 766-779.\cr
-}
+Taiyun Wei and Viliam Simko (2017). R package "corrplot": Visualization of a Correlation Matrix (Version 0.84)   
+
+Warton, D. I.; Blanchet, F. G.; O'Hara, R. B.; O'Hara, R. B.; Ovaskainen, O.; Taskinen, S.; Walker, S. C. and Hui, F. K. C. (2015) So Many Variables: Joint Modeling in Community Ecology. \emph{Trends in Ecology & Evolution}, 30, 766-779.
 }
 \seealso{
-\code{\link[corrplot]{corrplot}} \code{\link{jSDM-package}} \code{\link{jSDM_binomial_probit}} \code{\link{jSDM_binomial_logit}} \code{\link{jSDM_poisson_log}}
+\code{\link[corrplot]{corrplot}} \code{\link{jSDM-package}} \code{\link{jSDM_binomial_probit}} \cr
+         \code{\link{jSDM_binomial_logit}} \code{\link{jSDM_poisson_log}}
 }
 \author{
-\tabular{l}{
-Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>\cr
-Jeanne Clément <jeanne.clement16@laposte.net>\cr }
+Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>
+
+Jeanne Clément <jeanne.clement16@laposte.net>
 }
 \keyword{corrplot}

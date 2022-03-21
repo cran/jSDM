@@ -22,10 +22,13 @@
 #' @param tl.srt Numeric, for text label string rotation in degrees, see \code{\link[graphics]{text}}.
 #' @param ... Further arguments passed to \code{\link[corrplot]{corrplot}} function
 #' @return Displays a reordered correlation matrix
-#' @author \tabular{l}{
-#' Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>\cr
-#' Jeanne Clément <jeanne.clement16@laposte.net>\cr }
-#' @seealso \code{\link[corrplot]{corrplot}} \code{\link{jSDM-package}} \code{\link{jSDM_binomial_probit}} \code{\link{jSDM_binomial_logit}} \code{\link{jSDM_poisson_log}} 
+#' @author 
+#' Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>
+#' 
+#' Jeanne Clément <jeanne.clement16@laposte.net>
+#' 
+#' @seealso \code{\link[corrplot]{corrplot}} \code{\link{jSDM-package}} \code{\link{jSDM_binomial_probit}} \cr
+#'          \code{\link{jSDM_binomial_logit}} \code{\link{jSDM_poisson_log}} 
 #' @examples 
 #' library(jSDM)
 #' # frogs data
@@ -35,8 +38,8 @@
 #' # Normalized continuous variables
 #'  Env_frogs <- cbind(scale(frogs[,1]),frogs[,2],scale(frogs[,3]))
 #'  colnames(Env_frogs) <- colnames(frogs[,1:3])
-#'# Parameter inference
-#'# Increase the number of iterations to reach MCMC convergence
+#' # Parameter inference
+#' # Increase the number of iterations to reach MCMC convergence
 #' mod<-jSDM_binomial_probit(# Response variable
 #'                            presence_data = PA_frogs,
 #'                            # Explanatory variables
@@ -55,17 +58,19 @@
 #'                            W_start=0,
 #'                            V_alpha=1,
 #'                            # Priors
-#'                            shape=0.5, rate=0.0005,
-#'                            mu_beta=0, V_beta=1.0E6,
-#'                            mu_lambda=0, V_lambda=10,
+#'                            shape=0.1, rate=0.1,
+#'                            mu_beta=0, V_beta=1,
+#'                            mu_lambda=0, V_lambda=1,
 #'                            # Various
 #'                            seed=1234, verbose=1)
-#' # Representation of residual correlation between species 
+#' # Representation of residual correlation between species
 #' plot_residual_cor(mod)
-#' @references \tabular{l}{
-#' Taiyun Wei and Viliam Simko (2017). R package "corrplot": Visualization of a Correlation Matrix (Version 0.84) \cr
-#' Warton, D. I.; Blanchet, F. G.; O'Hara, R. B.; O'Hara, R. B.; Ovaskainen, O.; Taskinen, S.; Walker, S. C. and Hui, F. K. C. (2015) So Many Variables: Joint Modeling in Community Ecology. \emph{Trends in Ecology & Evolution}, 30, 766-779.\cr
-#' }
+#' plot_residual_cor(mod, prob=0.95)
+#' @references
+#' Taiyun Wei and Viliam Simko (2017). R package "corrplot": Visualization of a Correlation Matrix (Version 0.84)   
+#' 
+#' Warton, D. I.; Blanchet, F. G.; O'Hara, R. B.; O'Hara, R. B.; Ovaskainen, O.; Taskinen, S.; Walker, S. C. and Hui, F. K. C. (2015) So Many Variables: Joint Modeling in Community Ecology. \emph{Trends in Ecology & Evolution}, 30, 766-779.
+#'
 #' @keywords corrplot
 #' @importFrom corrplot corrplot
 #' @export 
@@ -81,7 +86,7 @@ plot_residual_cor <- function(mod, prob=NULL,
   # All non-significant correlations are set to zero, 
   # according to the (100 x prob)% HPD interval.
   if(!is.null(prob)){
-  lv2.cor$cor.mean <- lv2.cor$cor.mean * lv2.cor$sig.cor
+  lv2.cor$cor.mean <- lv2.cor$cor.mean * lv2.cor$cor.sig
   }
   lv2.cor$reorder.cor.mean <- corrplot::corrMatOrder(lv2.cor$cor.mean, order = "FPC", hclust.method = "average")
   if(!is.null(mod$model_spec$presence_data)){

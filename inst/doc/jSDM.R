@@ -2,7 +2,7 @@
 knitr::opts_chunk$set(
 fig.align = "center",
 fig.retina = 1,
-fig.width = 5, fig.height = 5,
+fig.width = 6, fig.height = 6,
 cache = FALSE,
 collapse = TRUE,
 comment = "#>",
