@@ -14,45 +14,238 @@
 
 <title>Bayesian inference methods</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 
 
 
 <style type="text/css">
-/* for pandoc --citeproc since 2.11 */
+
 div.csl-bib-body { }
 div.csl-entry {
-  clear: both;
+clear: both;
 }
 .hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
+margin-left:2em;
+text-indent:-2em;
 }
 div.csl-left-margin {
-  min-width:2em;
-  float:left;
+min-width:2em;
+float:left;
 }
 div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
+margin-left:2em;
+padding-left:1em;
 }
 div.csl-indent {
-  margin-left: 2em;
+margin-left: 2em;
 }
 </style>
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -67,53 +260,29 @@ div.csl-indent {
 <h1 class="title toc-ignore">Bayesian inference methods</h1>
 
 
-<div id="TOC">
-<ul>
-<li><a href="#bernoulli-distribution-with-probit-link-function"><span class="toc-section-number">1</span> Bernoulli distribution with probit link function</a>
-<ul>
-<li><a href="#model-definition"><span class="toc-section-number">1.1</span> Model definition</a></li>
-<li><a href="#conjugate-priors"><span class="toc-section-number">1.2</span> Conjugate priors</a>
-<ul>
-<li><a href="#fixed-species-effects"><span class="toc-section-number">1.2.1</span> Fixed species effects</a></li>
-<li><a href="#random-site-effects"><span class="toc-section-number">1.2.2</span> Random site effects</a></li>
-<li><a href="#random-site-effect-variance"><span class="toc-section-number">1.2.3</span> Random site effect variance</a></li>
-</ul></li>
-<li><a href="#gibbs-sampler-principle"><span class="toc-section-number">1.3</span> Gibbs sampler principle</a></li>
-<li><a href="#gibbs-sampler-using-conjuate-priors"><span class="toc-section-number">1.4</span> Gibbs sampler using conjuate priors</a></li>
-</ul></li>
-<li><a href="#binomial-distribution-with-logit-link-function"><span class="toc-section-number">2</span> Binomial distribution with logit link function</a>
-<ul>
-<li><a href="#model-definition-1"><span class="toc-section-number">2.1</span> Model definition</a></li>
-<li><a href="#priors-used"><span class="toc-section-number">2.2</span> Priors used</a></li>
-<li><a href="#adaptive-metropolis-algorithm-principle"><span class="toc-section-number">2.3</span> Adaptive Metropolis algorithm principle</a></li>
-<li><a href="#gibbs-sampler-using-adaptative-metropolis-algorithm"><span class="toc-section-number">2.4</span> Gibbs sampler using adaptative Metropolis algorithm</a></li>
-</ul></li>
-<li><a href="#poisson-distribution-with-log-link-function"><span class="toc-section-number">3</span> Poisson distribution with log link function</a>
-<ul>
-<li><a href="#model-definition-2"><span class="toc-section-number">3.1</span> Model definition</a></li>
-<li><a href="#gibbs-sampler-using-adaptative-metropolis-algorithm-1"><span class="toc-section-number">3.2</span> Gibbs sampler using adaptative Metropolis algorithm</a></li>
-</ul></li>
-<li><a href="#references">References</a></li>
-</ul>
-</div>
 
-<div id="bernoulli-distribution-with-probit-link-function" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> Bernoulli distribution with probit link function</h1>
-<div id="model-definition" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> Model definition</h2>
-<p>According to the article <span class="citation"><a href="#ref-Albert1993" role="doc-biblioref">Albert &amp; Siddhartha</a> (<a href="#ref-Albert1993" role="doc-biblioref">1993</a>)</span>, a possible model is to assume the existence of an underlying latent variable related to our observed binary variable using the following proposition :</p>
+<div id="bernoulli-distribution-with-probit-link-function" class="section level1">
+<h1>Bernoulli distribution with probit link function</h1>
+<div id="model-definition" class="section level2">
+<h2>Model definition</h2>
+<p>According to the article <span class="citation">Albert &amp;
+Siddhartha (<a href="#ref-Albert1993" role="doc-biblioref">1993</a>)</span>, a possible model is to assume the
+existence of an underlying latent variable related to our observed
+binary variable using the following proposition :</p>
 <ul>
 <li>Proposition</li>
 </ul>
-<p><span class="math display">\[ 
+<p><span class="math display">\[
 \begin{aligned}
-&amp;z_{ij} = \alpha_i X_i&#39;\beta_j+ W_i&#39;\lambda_j + \epsilon_{ij},\\
-&amp;\text{ with } \epsilon_{ij} \sim \mathcal{N}(0,1) \ \forall ij  \text{ and such as : } \\
+&amp;z_{ij} = \alpha_i X_i&#39;\beta_j+ W_i&#39;\lambda_j +
+\epsilon_{ij},\\
+&amp;\text{ with } \epsilon_{ij} \sim \mathcal{N}(0,1) \ \forall
+ij  \text{ and such as : } \\
 &amp;y_{ij}=
 \begin{cases}
 1 &amp; \text{ if } z_{ij} &gt; 0 \\
 0 &amp;  \text{ otherwise.}
-\end{cases} 
+\end{cases}
 \end{aligned}
 \Rightarrow  
 \begin{cases}
@@ -128,85 +297,150 @@ y_{ij}| z_{ij} \sim \mathcal{B}ernoulli(\theta_{ij}) \text{ with } \\
 </ul>
 <p><span class="math display">\[\begin{aligned}
 \mathbb{P}(y_{ij}=1) &amp; = \mathbb{P}(z_{ij} &gt; 0)\\
-&amp; = \mathbb{P}(\alpha_i + X_i&#39;\beta_j + W_i&#39;\lambda_j + \epsilon_{ij} &gt; 0)\\
-&amp; = \mathbb{P}(\epsilon_{ij} &gt; - (\alpha_i +  X_i&#39;\beta_j + W_i&#39;\lambda_j) \ ) \\
-&amp; = \mathbb{P}(\epsilon_{ij} \leq \alpha_i +  X_i&#39;\beta_j + W_i&#39;\lambda_j) \\
+&amp; = \mathbb{P}(\alpha_i + X_i&#39;\beta_j + W_i&#39;\lambda_j +
+\epsilon_{ij} &gt; 0)\\
+&amp; = \mathbb{P}(\epsilon_{ij} &gt; - (\alpha_i +  X_i&#39;\beta_j +
+W_i&#39;\lambda_j) \ ) \\
+&amp; = \mathbb{P}(\epsilon_{ij} \leq \alpha_i +  X_i&#39;\beta_j +
+W_i&#39;\lambda_j) \\
 &amp; = \Phi( \alpha_i + X_i&#39;\beta_j + W_i&#39;\lambda_j) \\
 \end{aligned}\]</span></p>
 <p>In the same way:</p>
 <p><span class="math display">\[\begin{aligned}
 \mathbb{P}(y_{ij}=0) &amp; = \mathbb{P}(z_{ij} \leq 0)\\
-&amp; = \mathbb{P}(\epsilon_{ij} \leq - (\alpha_i  + X_i&#39;\beta_j + W_i&#39;\lambda_j) \ ) \\
-&amp; = \mathbb{P}(\epsilon_{ij} &gt; \alpha_i + X_i&#39;\beta_j + W_i&#39;\lambda_j) \\
+&amp; = \mathbb{P}(\epsilon_{ij} \leq - (\alpha_i  + X_i&#39;\beta_j +
+W_i&#39;\lambda_j) \ ) \\
+&amp; = \mathbb{P}(\epsilon_{ij} &gt; \alpha_i + X_i&#39;\beta_j +
+W_i&#39;\lambda_j) \\
 &amp; = 1 - \Phi( \alpha_i + X_i&#39;\beta_j + W_i&#39;\lambda_j) \\
 \end{aligned}\]</span></p>
 <p>with the following parameters and priors :</p>
 <ul>
-<li><p>Latent variables: <span class="math inline">\(W_i=(W_{i1},\ldots,W_{iq})\)</span> where <span class="math inline">\(q\)</span> is the number of latent variables considered, which has to be fixed by the user (by default q=2).
-We assume that <span class="math inline">\(W_i \sim \mathcal{N}(0,I_q)\)</span> and we define the associated coefficients: <span class="math inline">\(\lambda_j=(\lambda_{j1},\ldots, \lambda_{jq})&#39;\)</span>. We use a prior distribution <span class="math inline">\(\mathcal{N}(\mu_{\lambda},V_{\lambda})\)</span> for each lambda not concerned by constraints to <span class="math inline">\(0\)</span> on upper diagonal and to strictly positive values on diagonal.</p></li>
+<li><p>Latent variables: <span class="math inline">\(W_i=(W_{i1},\ldots,W_{iq})\)</span> where <span class="math inline">\(q\)</span> is the number of latent variables
+considered, which has to be fixed by the user (by default q=2). We
+assume that <span class="math inline">\(W_i \sim
+\mathcal{N}(0,I_q)\)</span> and we define the associated coefficients:
+<span class="math inline">\(\lambda_j=(\lambda_{j1},\ldots,
+\lambda_{jq})&#39;\)</span>. We use a prior distribution <span class="math inline">\(\mathcal{N}(\mu_{\lambda},V_{\lambda})\)</span>
+for each lambda not concerned by constraints to <span class="math inline">\(0\)</span> on upper diagonal and to strictly
+positive values on diagonal.</p></li>
 <li><p>Explanatory variables:</p>
 <ul>
-<li>bioclimatic data about each site. <span class="math inline">\(X=(X_i)_{i=1,\ldots,nsite}\)</span> with <span class="math inline">\(X_i=(x_{i0},x_{i1},\ldots,x_{ip})\in \mathbb{R}^{p+1}\)</span> where <span class="math inline">\(p\)</span> is the number of bioclimatic variables considered and <span class="math inline">\(\forall i, x_{i0}=1\)</span>.</li>
-<li>traits data about each species. <span class="math inline">\(T=(T_j)_{j=1,\ldots,nspecies}\)</span> with <span class="math inline">\(T_j=(t_{j0},t_{j1},\ldots,t_{jq},\ldots,t_{jnt})\in \mathbb{R}^{nt+1}\)</span> where <span class="math inline">\(nt\)</span> is the number of species specific traits considered and <span class="math inline">\(t_{j0}=1,\forall j\)</span>.</li>
+<li>bioclimatic data about each site. <span class="math inline">\(X=(X_i)_{i=1,\ldots,nsite}\)</span> with <span class="math inline">\(X_i=(x_{i0},x_{i1},\ldots,x_{ip})\in
+\mathbb{R}^{p+1}\)</span> where <span class="math inline">\(p\)</span>
+is the number of bioclimatic variables considered and <span class="math inline">\(\forall i, x_{i0}=1\)</span>.</li>
+<li>traits data about each species. <span class="math inline">\(T=(T_j)_{j=1,\ldots,nspecies}\)</span> with <span class="math inline">\(T_j=(t_{j0},t_{j1},\ldots,t_{jq},\ldots,t_{jnt})\in
+\mathbb{R}^{nt+1}\)</span> where <span class="math inline">\(nt\)</span>
+is the number of species specific traits considered and <span class="math inline">\(t_{j0}=1,\forall j\)</span>.</li>
 </ul></li>
-<li><p>The corresponding regression coefficients for each species <span class="math inline">\(j\)</span> are noted : <span class="math inline">\(\beta_j=(\beta_{j0},\beta_{j1},\ldots,\beta_{jp})&#39;\)</span> where <span class="math inline">\(\beta_{j0}\)</span> represents the intercept for species <span class="math inline">\(j\)</span> which is assume to be a fixed effect.</p>
+<li><p>The corresponding regression coefficients for each species <span class="math inline">\(j\)</span> are noted : <span class="math inline">\(\beta_j=(\beta_{j0},\beta_{j1},\ldots,\beta_{jp})&#39;\)</span>
+where <span class="math inline">\(\beta_{j0}\)</span> represents the
+intercept for species <span class="math inline">\(j\)</span> which is
+assume to be a fixed effect.</p>
 <ul>
-<li>In the absence of data on species traits, the effect of species <span class="math inline">\(j\)</span>: <span class="math inline">\(\beta_j\)</span>; follows the same <em>a priori</em> Gaussian distribution such that <span class="math inline">\(\beta_j \sim \mathcal{N}_{p+1}(\mu_{\beta},V_{\beta})\)</span>, for each species.</li>
-<li>If species traits data are provided, the effect of species <span class="math inline">\(j\)</span>: <span class="math inline">\(\beta_j\)</span>; follows an <em>a priori</em> Gaussian distribution such that <span class="math inline">\(\beta_j \sim \mathcal{N}_{p+1}(\mu_{\beta_j},V_{\beta})\)</span>, where <span class="math inline">\(\mu_{\beta_{jk}} = \sum_{r=0}^{nt} t_{jr}.\gamma_{rk}\)</span> for <span class="math inline">\(k=0,\ldots,p\)</span>, takes different values for each species. We assume that <span class="math inline">\(\gamma_{rk} \sim \mathcal{N}(\mu_{\gamma_{rk}},V_{\gamma_{rk}})\)</span> as prior distribution.</li>
+<li>In the absence of data on species traits, the effect of species
+<span class="math inline">\(j\)</span>: <span class="math inline">\(\beta_j\)</span>; follows the same <em>a
+priori</em> Gaussian distribution such that <span class="math inline">\(\beta_j \sim
+\mathcal{N}_{p+1}(\mu_{\beta},V_{\beta})\)</span>, for each
+species.</li>
+<li>If species traits data are provided, the effect of species <span class="math inline">\(j\)</span>: <span class="math inline">\(\beta_j\)</span>; follows an <em>a priori</em>
+Gaussian distribution such that <span class="math inline">\(\beta_j \sim
+\mathcal{N}_{p+1}(\mu_{\beta_j},V_{\beta})\)</span>, where <span class="math inline">\(\mu_{\beta_{jk}} = \sum_{r=0}^{nt}
+t_{jr}.\gamma_{rk}\)</span> for <span class="math inline">\(k=0,\ldots,p\)</span>, takes different values for
+each species. We assume that <span class="math inline">\(\gamma_{rk}
+\sim \mathcal{N}(\mu_{\gamma_{rk}},V_{\gamma_{rk}})\)</span> as prior
+distribution.</li>
 </ul></li>
-<li><p><span class="math inline">\(\alpha_i\)</span> represents the random effect of site <span class="math inline">\(i\)</span> such as <span class="math inline">\(\alpha_i \sim \mathcal{N}(0,V_{\alpha})\)</span> and we assumed that <span class="math inline">\(V_{\alpha} \sim \mathcal {IG}(\text{shape}=0.5, \text{rate}=0.005)\)</span> as prior distribution by default.</p></li>
+<li><p><span class="math inline">\(\alpha_i\)</span> represents the
+random effect of site <span class="math inline">\(i\)</span> such as
+<span class="math inline">\(\alpha_i \sim
+\mathcal{N}(0,V_{\alpha})\)</span> and we assumed that <span class="math inline">\(V_{\alpha} \sim \mathcal {IG}(\text{shape}=0.5,
+\text{rate}=0.005)\)</span> as prior distribution by default.</p></li>
 </ul>
 </div>
-<div id="conjugate-priors" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> Conjugate priors</h2>
-<div id="fixed-species-effects" class="section level3" number="1.2.1">
-<h3><span class="header-section-number">1.2.1</span> Fixed species effects</h3>
+<div id="conjugate-priors" class="section level2">
+<h2>Conjugate priors</h2>
+<div id="fixed-species-effects" class="section level3">
+<h3>Fixed species effects</h3>
 <ul>
 <li>Proposition</li>
 </ul>
-<p>We go back to a model of the form: <span class="math inline">\(Z&#39; = X\beta + \epsilon\)</span> to estimate the posterior distributions of betas, lambdas and latent variables <span class="math inline">\(W_i\)</span> of the model. For example concerning <span class="math inline">\(\lambda_j\)</span>, we define <span class="math inline">\(Z&#39;_{ij} = Z_{ij} - \alpha_i - X_i&#39;\beta_j\)</span> such as <span class="math inline">\(Z&#39;_{ij} = W_i&#39;\lambda_j + \epsilon_{ij}\)</span> so <span class="math inline">\(Z&#39;_{ij} \ | \ W_i \ , \ \lambda_j \  \sim \mathcal{N}( W_i&#39;\lambda_j, 1)\)</span>.</p>
+<p>We go back to a model of the form: <span class="math inline">\(Z&#39;
+= X\beta + \epsilon\)</span> to estimate the posterior distributions of
+betas, lambdas and latent variables <span class="math inline">\(W_i\)</span> of the model. For example concerning
+<span class="math inline">\(\lambda_j\)</span>, we define <span class="math inline">\(Z&#39;_{ij} = Z_{ij} - \alpha_i -
+X_i&#39;\beta_j\)</span> such as <span class="math inline">\(Z&#39;_{ij}
+= W_i&#39;\lambda_j + \epsilon_{ij}\)</span> so <span class="math inline">\(Z&#39;_{ij} \ | \ W_i \ , \ \lambda_j \  \sim
+\mathcal{N}( W_i&#39;\lambda_j, 1)\)</span>.</p>
 <p>In this case we can use the following proposition:</p>
-<p><span class="math display">\[\begin{cases} 
+<p><span class="math display">\[\begin{cases}
 Y \ | \ \beta &amp;\sim \mathcal{N}_n ( X\beta, I_n) \\
 \beta  &amp;\sim \mathcal{N}_p (m,V)
 \end{cases}
 \Rightarrow \begin{cases}
 \beta|Y &amp;\sim \mathcal{N}_p (m^*,V^*) \text{ with }  \\
 m^* &amp;= (V^{-1} + X&#39;X)^{-1}(V^{-1}m + X&#39;Y)\\
-V^*&amp;=(V^{-1} + X&#39;X)^{-1} 
+V^*&amp;=(V^{-1} + X&#39;X)^{-1}
 \end{cases}\]</span>.</p>
 <ul>
 <li>Proof</li>
 </ul>
 <p><span class="math display">\[\begin{aligned}
 p(\beta \ | \ Y) &amp; \propto  p(Y \ | \ \beta) \ p(\beta) \\
-&amp; \propto  \frac{1}{(2\pi)^{\frac{n}{2}}}\exp\left(-\frac{1}{2}(Y-X\beta)&#39;(Y-X\beta)\right)\frac{1}{(2\pi)^{\frac{p}{2}}|V|^{\frac{1}{2}}}\exp\left(-\frac{1}{2}(\beta-m)&#39;V^{-1}(\beta-m)\right) \\
-&amp; \propto \exp\left(-\frac{1}{2}\left((\beta-m)&#39;V^{-1}(\beta-m) + (Y-X\beta)&#39;(Y-X\beta)\right)\right) \\
-&amp; \propto \exp\left(-\frac{1}{2}\left(\beta&#39;V^{-1}\beta + m&#39;V^{-1}m - m&#39;V^{-1}\beta -\beta&#39;V^{-1}m + Y&#39;Y + \beta&#39;X&#39;X\beta - Y&#39;X\beta - \beta&#39;X&#39;Y\right)\right) \\
-&amp; \propto \exp\left(-\frac{1}{2}\left(\beta&#39;(V^{-1}+X&#39;X)\beta -\beta&#39;(V^{-1}m + X&#39;Y) - (Y&#39;X + m&#39;V^{-1})\beta + m&#39;V^{-1}m + Y&#39;Y \right)\right) \\
-&amp; \propto \exp\left(-\frac{1}{2}\left(\beta&#39;(V^{-1}+X&#39;X)\beta -\beta&#39;(V^{-1}m + X&#39;Y) - (X&#39;Y + V^{-1}m)&#39;\beta + m&#39;V^{-1}m + Y&#39;Y \right)\right) \\
-&amp; \propto \exp(-\frac{1}{2}\left(\beta - (V^{-1}+X&#39;X)^{-1}(V^{-1}m + X&#39;Y)\right)&#39;(V^{-1}+X&#39;X)\left(\beta - (V^{-1}+X&#39;X)^{-1}(V^{-1}m + X&#39;Y)\right)\\
-&amp; \quad -(V^{-1}m + X&#39;Y)&#39;(V^{-1}+X&#39;X)^{-1}(V^{-1}m + X&#39;Y) +m&#39;V^{-1}m + Y&#39;Y)\\
-&amp; \propto \exp\left(-\frac{1}{2}\left(\beta - \underbrace{(V^{-1}+X&#39;X)^{-1}(V^{-1}m + X&#39;Y)}_{m^*}\right)&#39;\underbrace{(V^{-1}+X&#39;X)}_{{V^*}^{-1}}\left(\beta - (V^{-1}+X&#39;X)^{-1}(V^{-1}m + X&#39;Y)\right)\right)
+&amp;
+\propto  \frac{1}{(2\pi)^{\frac{n}{2}}}\exp\left(-\frac{1}{2}(Y-X\beta)&#39;(Y-X\beta)\right)\frac{1}{(2\pi)^{\frac{p}{2}}|V|^{\frac{1}{2}}}\exp\left(-\frac{1}{2}(\beta-m)&#39;V^{-1}(\beta-m)\right)
+\\
+&amp; \propto \exp\left(-\frac{1}{2}\left((\beta-m)&#39;V^{-1}(\beta-m)
++ (Y-X\beta)&#39;(Y-X\beta)\right)\right) \\
+&amp; \propto \exp\left(-\frac{1}{2}\left(\beta&#39;V^{-1}\beta +
+m&#39;V^{-1}m - m&#39;V^{-1}\beta -\beta&#39;V^{-1}m + Y&#39;Y +
+\beta&#39;X&#39;X\beta - Y&#39;X\beta - \beta&#39;X&#39;Y\right)\right)
+\\
+&amp; \propto
+\exp\left(-\frac{1}{2}\left(\beta&#39;(V^{-1}+X&#39;X)\beta
+-\beta&#39;(V^{-1}m + X&#39;Y) - (Y&#39;X + m&#39;V^{-1})\beta +
+m&#39;V^{-1}m + Y&#39;Y \right)\right) \\
+&amp; \propto
+\exp\left(-\frac{1}{2}\left(\beta&#39;(V^{-1}+X&#39;X)\beta
+-\beta&#39;(V^{-1}m + X&#39;Y) - (X&#39;Y + V^{-1}m)&#39;\beta +
+m&#39;V^{-1}m + Y&#39;Y \right)\right) \\
+&amp; \propto \exp(-\frac{1}{2}\left(\beta -
+(V^{-1}+X&#39;X)^{-1}(V^{-1}m +
+X&#39;Y)\right)&#39;(V^{-1}+X&#39;X)\left(\beta -
+(V^{-1}+X&#39;X)^{-1}(V^{-1}m + X&#39;Y)\right)\\
+&amp; \quad -(V^{-1}m + X&#39;Y)&#39;(V^{-1}+X&#39;X)^{-1}(V^{-1}m +
+X&#39;Y) +m&#39;V^{-1}m + Y&#39;Y)\\
+&amp; \propto \exp\left(-\frac{1}{2}\left(\beta -
+\underbrace{(V^{-1}+X&#39;X)^{-1}(V^{-1}m +
+X&#39;Y)}_{m^*}\right)&#39;\underbrace{(V^{-1}+X&#39;X)}_{{V^*}^{-1}}\left(\beta
+- (V^{-1}+X&#39;X)^{-1}(V^{-1}m + X&#39;Y)\right)\right)
 \end{aligned}\]</span></p>
 <!-- Actually, we use that proposition to estimate lambdas and betas in a single block. So, we consider $Z'_{ij} = X_i'\beta_j+ W_i'\lambda_j +\epsilon_{ij}$.  -->
-<p>Actually, we use that proposition to estimate betas, lambdas and gammas if species traits data are provided.</p>
+<p>Actually, we use that proposition to estimate betas, lambdas and
+gammas if species traits data are provided.</p>
 </div>
-<div id="random-site-effects" class="section level3" number="1.2.2">
-<h3><span class="header-section-number">1.2.2</span> Random site effects</h3>
+<div id="random-site-effects" class="section level3">
+<h3>Random site effects</h3>
 <ul>
 <li>Proposition</li>
 </ul>
-<p>About the posterior distribution of the random site effects <span class="math inline">\((\alpha_i)_{i=1,\dots,nsite}\)</span>, we can use a transformation of the form <span class="math inline">\(Z&#39;_{ij} = \alpha_i + \epsilon_{ij}\)</span>, with <span class="math inline">\(Z&#39;_{ij} = Z_{ij} - W_i&#39;\lambda_j - X_i&#39;\beta_j\)</span> so <span class="math inline">\(Z&#39;_{ij} \ | \ W_i, \ \lambda_j, \ \beta_j, \ \alpha_i \ \sim \mathcal{N}(\alpha_i,1)\)</span>. We then use the following proposition:</p>
-<p><span class="math display">\[\begin{cases} 
+<p>About the posterior distribution of the random site effects <span class="math inline">\((\alpha_i)_{i=1,\dots,nsite}\)</span>, we can use
+a transformation of the form <span class="math inline">\(Z&#39;_{ij} =
+\alpha_i + \epsilon_{ij}\)</span>, with <span class="math inline">\(Z&#39;_{ij} = Z_{ij} - W_i&#39;\lambda_j -
+X_i&#39;\beta_j\)</span> so <span class="math inline">\(Z&#39;_{ij} \ |
+\ W_i, \ \lambda_j, \ \beta_j, \ \alpha_i \ \sim
+\mathcal{N}(\alpha_i,1)\)</span>. We then use the following
+proposition:</p>
+<p><span class="math display">\[\begin{cases}
 x \ | \ \theta &amp; \sim \mathcal{N}(\theta, \ \sigma^2) \\
 \theta  &amp; \sim \mathcal{N}(\mu_0,{\tau_0}^2) \\
 \sigma^2 &amp; \text{ known}
 \end{cases}
 \Rightarrow
-\begin{cases} 
+\begin{cases}
 \theta | \ x &amp;\sim \mathcal{N}(\mu_1,{\tau_1}^2) \text{ with }\\
-\mu_1 &amp;= \dfrac{{\tau_0}^2\mu_0 + x\sigma^2}{{\tau_0}^{-2}+\sigma^{-2}} \\
+\mu_1 &amp;= \dfrac{{\tau_0}^2\mu_0 +
+x\sigma^2}{{\tau_0}^{-2}+\sigma^{-2}} \\
 {\tau_1}^{-2} &amp;={\tau_0}^{-2}+\sigma^{-2}
 \end{cases}\]</span>.</p>
 <ul>
@@ -214,254 +448,516 @@ x \ | \ \theta &amp; \sim \mathcal{N}(\theta, \ \sigma^2) \\
 </ul>
 <p><span class="math display">\[\begin{aligned}
 p(\theta \ | \ x) &amp; \propto  p(x \ | \ \theta) \ p(\theta) \\
-&amp; \propto  \frac{1}{(2\pi\sigma^2)^{\frac{1}{2}}}\exp\left(-\frac{1}{2\sigma^2}(x-\theta)^2\right)\frac{1}{(2\pi{\tau_0}^2)^{\frac{1}{2}}}\exp\left(-\frac{1}{2{\tau_0}^2}(\theta-\mu_0)^2\right) \\
-&amp; \propto \exp\left(-\frac{1}{2{\tau_0}^2}(\theta-\mu_0)^2-\frac{1}{2\sigma^2}(x-\theta)^2\right) \\
-&amp; \propto \exp\left(-\frac{1}{2{\tau_0}^2}(\theta^2-2\mu_0\theta)-\frac{1}{2\sigma^2}(\theta^2-2x\theta)\right)\\
-&amp; \propto \exp\left(-\frac{1}{2}\left(\theta^2 ({\tau_0}^{-2}+\sigma^{-2})-2\mu_0\theta{\tau_0}^{-2}-2x\theta\sigma^{-2}\right)\right)\\
-&amp; \propto \exp\left(-\frac{1}{2({\tau_0}^{-2}+\sigma^{-2})^{-1}}\left(\theta^2 -2\theta \frac{\mu_0{\tau_0}^{-2}+ x\sigma^{-2}}{{\tau_0}^{-2}+\sigma^{-2}}\right)\right)\\
+&amp;
+\propto  \frac{1}{(2\pi\sigma^2)^{\frac{1}{2}}}\exp\left(-\frac{1}{2\sigma^2}(x-\theta)^2\right)\frac{1}{(2\pi{\tau_0}^2)^{\frac{1}{2}}}\exp\left(-\frac{1}{2{\tau_0}^2}(\theta-\mu_0)^2\right)
+\\
+&amp; \propto
+\exp\left(-\frac{1}{2{\tau_0}^2}(\theta-\mu_0)^2-\frac{1}{2\sigma^2}(x-\theta)^2\right)
+\\
+&amp; \propto
+\exp\left(-\frac{1}{2{\tau_0}^2}(\theta^2-2\mu_0\theta)-\frac{1}{2\sigma^2}(\theta^2-2x\theta)\right)\\
+&amp; \propto \exp\left(-\frac{1}{2}\left(\theta^2
+({\tau_0}^{-2}+\sigma^{-2})-2\mu_0\theta{\tau_0}^{-2}-2x\theta\sigma^{-2}\right)\right)\\
+&amp; \propto
+\exp\left(-\frac{1}{2({\tau_0}^{-2}+\sigma^{-2})^{-1}}\left(\theta^2
+-2\theta \frac{\mu_0{\tau_0}^{-2}+
+x\sigma^{-2}}{{\tau_0}^{-2}+\sigma^{-2}}\right)\right)\\
 \end{aligned}\]</span></p>
 </div>
-<div id="random-site-effect-variance" class="section level3" number="1.2.3">
-<h3><span class="header-section-number">1.2.3</span> Random site effect variance</h3>
+<div id="random-site-effect-variance" class="section level3">
+<h3>Random site effect variance</h3>
 <ul>
 <li>Proposition</li>
 </ul>
-<p>Concerning posterior distribution of <span class="math inline">\(V_{\alpha}\)</span>, the variance of random site effects <span class="math inline">\((\alpha_i)_{i=1,\dots,nsite}\)</span>, we use the following proposition :<br />
-If <span class="math display">\[\begin{cases} 
+<p>Concerning posterior distribution of <span class="math inline">\(V_{\alpha}\)</span>, the variance of random site
+effects <span class="math inline">\((\alpha_i)_{i=1,\dots,nsite}\)</span>, we use the
+following proposition :<br />
+If <span class="math display">\[\begin{cases}
 x \ | \ \sigma^2 &amp; \sim \mathcal{N}_n (\theta, \ \sigma^2I_n) \\
 \sigma^2  &amp; \sim \mathcal{IG} (a,b) \\
 \theta &amp; \text{ known}
-\end{cases} \Rightarrow 
+\end{cases} \Rightarrow
 \begin{cases}
 \sigma^2|x \sim \mathcal{IG}(a&#39;,b&#39;) \text{ with } \\
-a&#39; = a + \frac{n}{2} \\ 
-b&#39; = \frac{1}{2}\sum\limits_{i=1}^n(x_i-\theta)^2 + b. 
+a&#39; = a + \frac{n}{2} \\
+b&#39; = \frac{1}{2}\sum\limits_{i=1}^n(x_i-\theta)^2 + b.
 \end{cases}\]</span></p>
 <ul>
 <li>Proof</li>
 </ul>
 <p><span class="math display">\[\begin{aligned}
 p(\sigma^2 \ | \ x) &amp; \propto  p(x \ | \ \sigma^2) \ p(\sigma^2) \\
-&amp; \propto  \frac{1}{(2\pi\sigma^2)^{\frac{n}{2}}}\exp\left(-\frac{1}{2\sigma^2}(x-\theta)&#39;(x-\theta)\right)\frac{b^a}{\Gamma(a)}{(\sigma^2)}^{-(a+1)}\exp\left(-\frac{b}{\sigma^2}\right) \\
-&amp; \propto {(\sigma^2)}^{-\left(\underbrace{\frac{n}{2}+a}_{a&#39;}+1\right)}\exp\left(-\frac{1}{\sigma^2}\underbrace{\left(b+\frac{1}{2}\sum\limits_{i=1}^n(x_i-\theta)^2\right)}_{b&#39;}\right)
+&amp;
+\propto  \frac{1}{(2\pi\sigma^2)^{\frac{n}{2}}}\exp\left(-\frac{1}{2\sigma^2}(x-\theta)&#39;(x-\theta)\right)\frac{b^a}{\Gamma(a)}{(\sigma^2)}^{-(a+1)}\exp\left(-\frac{b}{\sigma^2}\right)
+\\
+&amp; \propto
+{(\sigma^2)}^{-\left(\underbrace{\frac{n}{2}+a}_{a&#39;}+1\right)}\exp\left(-\frac{1}{\sigma^2}\underbrace{\left(b+\frac{1}{2}\sum\limits_{i=1}^n(x_i-\theta)^2\right)}_{b&#39;}\right)
 \end{aligned}\]</span></p>
 </div>
 </div>
-<div id="gibbs-sampler-principle" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> Gibbs sampler principle</h2>
-<p>In the Bayesian framework, Gibbs’ algorithm produces a realization of the parameter <span class="math inline">\(\theta=(\theta_),\ldots,\theta_m)\)</span> according to the <em>a posteriori</em> law <span class="math inline">\(\Pi(\theta \ | \ x)\)</span> as soon as we are able to express the conditional laws: <span class="math inline">\(\Pi(\theta_i | \theta_1,\dots,\theta_{i-1},\theta_{i+1},\ldots,\theta_m, x)\)</span> for <span class="math inline">\(i =1,\ldots,m\)</span>.</p>
+<div id="gibbs-sampler-principle" class="section level2">
+<h2>Gibbs sampler principle</h2>
+<p>In the Bayesian framework, Gibbs’ algorithm produces a realization of
+the parameter <span class="math inline">\(\theta=(\theta_1,\ldots,\theta_m)\)</span>
+according to the <em>a posteriori</em> law <span class="math inline">\(\Pi(\theta \ | \ x)\)</span> as soon as we are
+able to express the conditional laws: <span class="math inline">\(\Pi(\theta_i |
+\theta_1,\dots,\theta_{i-1},\theta_{i+1},\ldots,\theta_m, x)\)</span>
+for <span class="math inline">\(i =1,\ldots,m\)</span>.</p>
 <p><strong>Gibbs sampling</strong> consists of:</p>
 <ul>
-<li><p><strong>Initialization</strong> : arbitrary choice of <span class="math inline">\(\theta^{(0)}= (\theta_1^{(0)},\dots,\theta_m^{(0)})\)</span>.</p></li>
-<li><p><strong>Iteration <span class="math inline">\(t\)</span></strong> : Genererate <span class="math inline">\(\theta^{(t)}\)</span> as follows :</p>
+<li><p><strong>Initialization</strong> : arbitrary choice of <span class="math inline">\(\theta^{(0)}=
+(\theta_1^{(0)},\dots,\theta_m^{(0)})\)</span>.</p></li>
+<li><p><strong>Iteration <span class="math inline">\(t\)</span></strong>
+: Genererate <span class="math inline">\(\theta^{(t)}\)</span> as
+follows :</p>
 <ul>
-<li><p><span class="math inline">\(\theta_1^{(t)} \sim \Pi\left(\theta_1 \ | \theta_2^{(t-1)},\dots, \theta_m^{(t-1)}, x \right)\)</span></p></li>
-<li><p><span class="math inline">\(\theta_2^{(t)} \sim \Pi\left((\theta_2 \ | \ (\theta_1^{(t)}, \theta_3^{(t-1)},\ldots,\theta_m^{(t-1)},x\right)\)</span></p></li>
-<li><p><span class="math inline">\(\theta_m^{(t)} \sim \Pi\left(\theta_m \ | \ \theta_1^{(t)}, \ldots, \theta_{m-1}^{(t)},x\right)\)</span></p></li>
+<li><p><span class="math inline">\(\theta_1^{(t)} \sim \Pi\left(\theta_1
+\ | \theta_2^{(t-1)},\dots, \theta_m^{(t-1)}, x
+\right)\)</span></p></li>
+<li><p><span class="math inline">\(\theta_2^{(t)} \sim
+\Pi\left((\theta_2 \ | \ (\theta_1^{(t)},
+\theta_3^{(t-1)},\ldots,\theta_m^{(t-1)},x\right)\)</span></p></li>
+<li><p><span class="math inline">\(\theta_m^{(t)} \sim \Pi\left(\theta_m
+\ | \ \theta_1^{(t)}, \ldots,
+\theta_{m-1}^{(t)},x\right)\)</span></p></li>
 </ul></li>
 </ul>
-<p>Successive iterations of this algorithm generate the states of a Markov chain <span class="math inline">\(\{\theta^{(t)}, t &gt; 0\}\)</span> to values in <span class="math inline">\(\mathbb{R}^{m}\)</span>, we show that this chain admits an invariant measure which is the <em>a posteriori</em> law.</p>
-<p>For a sufficiently large number of iterations, the vector <span class="math inline">\(\theta\)</span> obtained can thus be considered as a realization of the joint <em>a posteriori</em> law <span class="math inline">\(\Pi(\theta \ | \ x)\)</span>.</p>
-<p>Consequently, the implementation of a Gibbs sampler requires the knowledge of the <em>a posteriori</em> distributions of each of the parameters conditionally to the other parameters of the model, which can be deduced from the conjugated priors formulas in the case of the probit model but are not explicitly expressible in the case where a logit or log link function is used.</p>
+<p>Successive iterations of this algorithm generate the states of a
+Markov chain <span class="math inline">\(\{\theta^{(t)}, t &gt;
+0\}\)</span> to values in <span class="math inline">\(\mathbb{R}^{m}\)</span>, we show that this chain
+admits an invariant measure which is the <em>a posteriori</em> law.</p>
+<p>For a sufficiently large number of iterations, the vector <span class="math inline">\(\theta\)</span> obtained can thus be considered as
+a realization of the joint <em>a posteriori</em> law <span class="math inline">\(\Pi(\theta \ | \ x)\)</span>.</p>
+<p>Consequently, the implementation of a Gibbs sampler requires the
+knowledge of the <em>a posteriori</em> distributions of each of the
+parameters conditionally to the other parameters of the model, which can
+be deduced from the conjugated priors formulas in the case of the probit
+model but are not explicitly expressible in the case where a logit or
+log link function is used.</p>
 </div>
-<div id="gibbs-sampler-using-conjuate-priors" class="section level2" number="1.4">
-<h2><span class="header-section-number">1.4</span> Gibbs sampler using conjuate priors</h2>
-<p>The algorithm used in <code>jSDM_binomial_probit()</code> function to estimate the parameters of the probit model is therefore as follows:</p>
+<div id="gibbs-sampler-using-conjuate-priors" class="section level2">
+<h2>Gibbs sampler using conjuate priors</h2>
+<p>The algorithm used in <code>jSDM_binomial_probit()</code> function to
+estimate the parameters of the probit model is therefore as follows:</p>
 <ul>
-<li>Define the constants <span class="math inline">\(N_{Gibbs}\)</span>, <span class="math inline">\(N_{burn}\)</span>, <span class="math inline">\(N_{thin}\)</span> such that <span class="math inline">\(N_{Gibbs}\)</span> corresponds to the number of iterations performed by the Gibbs sampler, <span class="math inline">\(N_{burn}\)</span> to the number of iterations required for burn-in or warm-up time and <span class="math inline">\(N_{samp} = \dfrac{N_{Gibbs}-N_{burn}}{N_{thin}}\)</span> to the number of estimated values retained for each parameter. Indeed, the estimated parameters are recorded at certain iterations, in order to obtain a sample of <span class="math inline">\(N_{samp}\)</span> values distributed according to the <span class="math inline">\(a \ posteriori\)</span> distribution for each of the parameters.</li>
+<li>Define the constants <span class="math inline">\(N_{Gibbs}\)</span>,
+<span class="math inline">\(N_{burn}\)</span>, <span class="math inline">\(N_{thin}\)</span> such that <span class="math inline">\(N_{Gibbs}\)</span> corresponds to the number of
+iterations performed by the Gibbs sampler, <span class="math inline">\(N_{burn}\)</span> to the number of iterations
+required for burn-in or warm-up time and <span class="math inline">\(N_{samp} =
+\dfrac{N_{Gibbs}-N_{burn}}{N_{thin}}\)</span> to the number of estimated
+values retained for each parameter. Indeed, the estimated parameters are
+recorded at certain iterations, in order to obtain a sample of <span class="math inline">\(N_{samp}\)</span> values distributed according to
+the <span class="math inline">\(a \ posteriori\)</span> distribution for
+each of the parameters.</li>
 </ul>
-<p>Initialize all parameters to <span class="math inline">\(0\)</span> for example, except the diagonal values of <span class="math inline">\(\Lambda\)</span> initialized at <span class="math inline">\(1\)</span> and <span class="math inline">\(V_{\alpha}^{(0)}=1\)</span>.</p>
+<p>Initialize all parameters to <span class="math inline">\(0\)</span>
+for example, except the diagonal values of <span class="math inline">\(\Lambda\)</span> initialized at <span class="math inline">\(1\)</span> and <span class="math inline">\(V_{\alpha}^{(0)}=1\)</span>.</p>
 <ul>
-<li><p>Gibbs sampler: at each iteration <span class="math inline">\(t\)</span> for <span class="math inline">\(t=1,\ldots,N_{Gibbs}\)</span> we repeat each of these steps :</p>
+<li><p>Gibbs sampler: at each iteration <span class="math inline">\(t\)</span> for <span class="math inline">\(t=1,\ldots,N_{Gibbs}\)</span> we repeat each of
+these steps :</p>
 <ul>
-<li><p>Generate the <strong>latent variable</strong> <span class="math inline">\(Z^{(t)}=\left(Z_{ij}^{(t)}\right)_{i=1,\ldots,I}^{j=1,\ldots,J}\)</span> such that
-<span class="math display">\[Z_{ij}^{(t)} \sim  \begin{cases} 
-\mathcal{N}\left(\alpha_i^{(t−1)} + X_i\beta_j^{(t−1)} + W_i^{(t−1)}\lambda_j^{(t−1)}, \ 1 \right) \text{ right truncated by } 0 &amp; \text{ if } y_{ij } =0 \\ 
-\mathcal{N}\left(\alpha_i^{(t−1)} + X_i\beta_j^{(t−1)} + W_i^{(t−1)}\lambda_j^{(t−1)}, \ 1 \right) \text{ left truncated by } 0 &amp; \text{ if } y_{ij} =1
-\end{cases}\]</span>
-, the latent variable is thus initialized at the first iteration by generating it according to these centered normal laws.</p></li>
-<li><p>If species traits data are provided, generate the <strong>effects of species-specific traits on species’ responses</strong> <span class="math inline">\(\gamma^{(t)}=\left(\gamma_{rk}^{(t)}\right)^{r=0,\ldots,nt}_{k=0,\ldots,p}\)</span> such as :
-<span class="math display">\[\gamma_{rk}^{(t)} \ | \beta_{1k}^{(t-1)}, \ldots, \beta_{Jk}^{(t-1)} \sim \mathcal{N}(m^\star,V^\star) \text{, with }\]</span>
-<span class="math display">\[m^\star = (V_{\gamma_{rk}}^{-1} + T_r&#39;T_r)^{-1}(V_{\gamma_{rk}}^{-1}\mu_{\gamma_{rk}} + T_r\left(\beta_k^{(t-1)} - \sum\limits_{r&#39; \neq r} T_{r&#39;} \gamma_{r&#39;k}^{(t-1)} \right) \text{ and } V^\star = \left(V_{\gamma_{rk}}^{-1}+ T_r&#39;T_r\right)^{-1}.\]</span></p></li>
-<li><p>Generate the <strong>fixed species effects</strong> <span class="math inline">\(\beta_j^{(t)}=(\beta_{j0}^{(t)},\beta_{j1}^{(t)}, \ldots, \beta_{jp}^{(t)})&#39;\)</span> for <span class="math inline">\(j=1,\ldots,J\)</span> such as :
-<span class="math display">\[\beta_j^{(t)} \ | \ Z^{(t)}, W_1^{(t-1)}, \alpha_1^{(t-1)}, \ldots, W_I^{(t−1)}, \alpha_I^{(t-1), ,\lambda_{j1}^{(t-1)},\ldots, \lambda_{jq}^{(t-1)}} \sim \mathcal{N}_{p+1}(m^\star,V^\star) \text{, with }\]</span>
-<span class="math display">\[m^\star = (V_{\beta}^{-1} + X&#39;X)^{-1}(V_{\beta}^{-1}\mu_{\beta_j} + X&#39;Z^\star_j) \text{ and } V^\star = \left(V_{\beta}^{-1}+ X&#39;X\right)^{-1},\]</span>
-<span class="math display">\[\text{ where } Z_j^\star =(Z_{1j}^\star,\ldots,Z_{Ij}^\star)&#39; \text{ such as } Z^\star_{ij} = Z_{ij}^{(t)} - W_i^{(t−1)}\lambda_j^{(t−1)} - \alpha_i^{(t-1)}.\]</span></p></li>
-<li><p>Generate the the <strong>loading factors related to latent variables</strong> <span class="math inline">\(\lambda_j^{(t)}=(\lambda_{j1}^{(t)},\ldots, \lambda_{jq}^{(t)})&#39;\)</span> for <span class="math inline">\(j=1,\ldots,J\)</span> such as :
-<span class="math display">\[\lambda_{jl}^{(t)} \ | \ Z^{(t)}, \beta_j^{(t)}, \alpha^{(t-1)}, W^{(t-1)}, \lambda_1^{(t-1)}, \ldots, \lambda_{l-1}^{(t−1)},\lambda_{l+1}^{(t−1)},\ldots, \lambda_q^{(t-1)} \sim \mathcal{N}(m^\star,V^\star) \text{, with }\]</span>
-<span class="math display">\[m^\star = (V_{\lambda}^{-1} + {W_l^{(t-1)}}&#39;W_l^{(t-1)})^{-1}(V_{\lambda}^{-1}\mu_{\lambda} + {W_l^{(t-1)}}&#39;Z^\star_j) \text{ and } V^\star = \left(V_{\lambda}^{-1}+{W_l^{(t-1)}}&#39;W_l^{(t-1)}\right)^{-1},\]</span>
-<span class="math display">\[\text{ where } Z_j^\star =(Z_{1j}^\star,\ldots,Z_{Ij}^\star)&#39; \text{ such as } Z^\star_{ij} = Z_{ij}^{(t)}-X_i\beta_j^{(t)}-\alpha_i^{(t-1)}-\sum\limits_{l&#39;\neq l}W_{il&#39;}\lambda_{jl&#39;}.\]</span>
-In order to constrain the diagonal values of <span class="math inline">\(\Lambda =\left(\lambda_{jl}\right)_{j=1,\ldots,J}^{l=1,\ldots,q}\)</span> to positive values and make the matrix lower triangular, the values of <span class="math inline">\(\lambda_j^{(t)}\)</span> are simulated according to the following conditions:
-<span class="math display">\[ \lambda_{jl}^{(t)} \sim \begin{cases}
-P \text{ such as } \mathbb{P}(\lambda_{jl} = 0)=1 &amp; \text{ if } l&gt;j, \\
-\mathcal{N}(m^\star,V^\star) \text{ left truncated by } 0  &amp; \text{ if } l=j, \\
+<li><p>Generate the <strong>latent variable</strong> <span class="math inline">\(Z^{(t)}=\left(Z_{ij}^{(t)}\right)_{i=1,\ldots,I}^{j=1,\ldots,J}\)</span>
+such that <span class="math display">\[Z_{ij}^{(t)} \sim  \begin{cases}
+\mathcal{N}\left(\alpha_i^{(t−1)} + X_i\beta_j^{(t−1)} +
+W_i^{(t−1)}\lambda_j^{(t−1)}, \ 1 \right) \text{ right truncated by } 0
+&amp; \text{ if } y_{ij } =0 \\
+\mathcal{N}\left(\alpha_i^{(t−1)} + X_i\beta_j^{(t−1)} +
+W_i^{(t−1)}\lambda_j^{(t−1)}, \ 1 \right) \text{ left truncated by } 0
+&amp; \text{ if } y_{ij} =1
+\end{cases}\]</span> , the latent variable is thus initialized at the
+first iteration by generating it according to these centered normal
+laws.</p></li>
+<li><p>If species traits data are provided, generate the <strong>effects
+of species-specific traits on species’ responses</strong> <span class="math inline">\(\gamma^{(t)}=\left(\gamma_{rk}^{(t)}\right)^{r=0,\ldots,nt}_{k=0,\ldots,p}\)</span>
+such as : <span class="math display">\[\gamma_{rk}^{(t)} \ |
+\beta_{1k}^{(t-1)}, \ldots, \beta_{Jk}^{(t-1)} \sim
+\mathcal{N}(m^\star,V^\star) \text{, with }\]</span> <span class="math display">\[m^\star = (V_{\gamma_{rk}}^{-1} +
+T_r&#39;T_r)^{-1}(V_{\gamma_{rk}}^{-1}\mu_{\gamma_{rk}} +
+T_r\left(\beta_k^{(t-1)} - \sum\limits_{r&#39; \neq r} T_{r&#39;}
+\gamma_{r&#39;k}^{(t-1)} \right) \text{ and } V^\star =
+\left(V_{\gamma_{rk}}^{-1}+ T_r&#39;T_r\right)^{-1}.\]</span></p></li>
+<li><p>Generate the <strong>fixed species effects</strong> <span class="math inline">\(\beta_j^{(t)}=(\beta_{j0}^{(t)},\beta_{j1}^{(t)},
+\ldots, \beta_{jp}^{(t)})&#39;\)</span> for <span class="math inline">\(j=1,\ldots,J\)</span> such as : <span class="math display">\[\beta_j^{(t)} \ | \ Z^{(t)}, W_1^{(t-1)},
+\alpha_1^{(t-1)}, \ldots, W_I^{(t−1)}, \alpha_I^{(t-1),
+,\lambda_{j1}^{(t-1)},\ldots, \lambda_{jq}^{(t-1)}} \sim
+\mathcal{N}_{p+1}(m^\star,V^\star) \text{, with }\]</span> <span class="math display">\[m^\star = (V_{\beta}^{-1} +
+X&#39;X)^{-1}(V_{\beta}^{-1}\mu_{\beta_j} + X&#39;Z^\star_j) \text{ and
+} V^\star = \left(V_{\beta}^{-1}+ X&#39;X\right)^{-1},\]</span> <span class="math display">\[\text{ where } Z_j^\star
+=(Z_{1j}^\star,\ldots,Z_{Ij}^\star)&#39; \text{ such as } Z^\star_{ij} =
+Z_{ij}^{(t)} - W_i^{(t−1)}\lambda_j^{(t−1)} -
+\alpha_i^{(t-1)}.\]</span></p></li>
+<li><p>Generate the the <strong>loading factors related to latent
+variables</strong> <span class="math inline">\(\lambda_j^{(t)}=(\lambda_{j1}^{(t)},\ldots,
+\lambda_{jq}^{(t)})&#39;\)</span> for <span class="math inline">\(j=1,\ldots,J\)</span> such as : <span class="math display">\[\lambda_{jl}^{(t)} \ | \ Z^{(t)}, \beta_j^{(t)},
+\alpha^{(t-1)}, W^{(t-1)}, \lambda_1^{(t-1)}, \ldots,
+\lambda_{l-1}^{(t−1)},\lambda_{l+1}^{(t−1)},\ldots, \lambda_q^{(t-1)}
+\sim \mathcal{N}(m^\star,V^\star) \text{, with }\]</span> <span class="math display">\[m^\star = (V_{\lambda}^{-1} +
+{W_l^{(t-1)}}&#39;W_l^{(t-1)})^{-1}(V_{\lambda}^{-1}\mu_{\lambda} +
+{W_l^{(t-1)}}&#39;Z^\star_j) \text{ and } V^\star =
+\left(V_{\lambda}^{-1}+{W_l^{(t-1)}}&#39;W_l^{(t-1)}\right)^{-1},\]</span>
+<span class="math display">\[\text{ where } Z_j^\star
+=(Z_{1j}^\star,\ldots,Z_{Ij}^\star)&#39; \text{ such as } Z^\star_{ij} =
+Z_{ij}^{(t)}-X_i\beta_j^{(t)}-\alpha_i^{(t-1)}-\sum\limits_{l&#39;\neq
+l}W_{il&#39;}\lambda_{jl&#39;}.\]</span> In order to constrain the
+diagonal values of <span class="math inline">\(\Lambda
+=\left(\lambda_{jl}\right)_{j=1,\ldots,J}^{l=1,\ldots,q}\)</span> to
+positive values and make the matrix lower triangular, the values of
+<span class="math inline">\(\lambda_j^{(t)}\)</span> are simulated
+according to the following conditions: <span class="math display">\[
+\lambda_{jl}^{(t)} \sim \begin{cases}
+P \text{ such as } \mathbb{P}(\lambda_{jl} = 0)=1 &amp; \text{ if }
+l&gt;j, \\
+\mathcal{N}(m^\star,V^\star) \text{ left truncated by } 0  &amp; \text{
+if } l=j, \\
 \mathcal{N}(m^\star,V^\star) &amp; \text{ if } l&lt;j.
 \end{cases}\]</span></p></li>
-<li><p>Generate the <strong>latent variables</strong> (or unmeasured predictors) <span class="math inline">\(W_i^{(t)}\)</span> for <span class="math inline">\(i=1,\ldots,I\)</span> according to : <span class="math display">\[W_i^{(t)} \ | \ Z^{(t)}, \lambda^{(t)}, \beta^{(t)},  \alpha_i^{(t-1)} \sim \mathcal{N}_{q} \left((I_q + {\Lambda^{(t)}}&#39;\Lambda^{(t)})^{-1}({\Lambda^{(t)}}&#39;Z_i^{\star}),(I_q + {\Lambda^{(t)}}&#39;\Lambda^{(t)})^{-1}\right),\]</span>
-<span class="math display">\[\text{ where } Z_i^{\star} =(Z_{i1}^{\star},\ldots,Z_{iJ}^{\star}) \text{ such as } Z_{ij}^{\star} = Z_{ij}^{(t)}-\alpha_i^{(t-1)} - X_i\beta_j^{(t)}.\]</span></p></li>
-<li><p>Generate the <strong>random site effects</strong> <span class="math inline">\(\alpha_i^{(t)}\)</span> for <span class="math inline">\(i=1,\ldots,I\)</span> selon :
-<span class="math display">\[ \alpha_i | \ Z^{(t)}, \lambda^{(t)}, \beta^{(t)}, W_i^{(t)} \sim \mathcal{N}\left(\dfrac{ \sum_{j=1}^J Z_{ij}^{(t)} - X_i\beta_j^{(t)} - W_i^{(t)}\lambda_j^{(t)}}{{V_{\alpha}^{(t-1)}}^{-1} + J} , \left( \frac{1}{V_{\alpha}^{(t-1)}}+ J \right)^{-1}  \right)\]</span></p></li>
-<li><p>Generate the <strong>variance of random site effects</strong> <span class="math inline">\(V_\alpha^{(t)}\)</span> according to: <span class="math display">\[V_\alpha^{(t)} \ | \ \alpha_1^{(t)},\ldots,\alpha_I^{(t)} \sim \mathcal{IG}\left( \text{shape}=0.5 + \frac{I}{2}, \text{rate}=0.005 + \frac{1}{2}\sum\limits_{i=1}^I \left(\alpha_i^{(t)}\right)^2\right)\]</span></p></li>
+<li><p>Generate the <strong>latent variables</strong> (or unmeasured
+predictors) <span class="math inline">\(W_i^{(t)}\)</span> for <span class="math inline">\(i=1,\ldots,I\)</span> according to : <span class="math display">\[W_i^{(t)} \ | \ Z^{(t)}, \lambda^{(t)},
+\beta^{(t)},  \alpha_i^{(t-1)} \sim \mathcal{N}_{q} \left((I_q +
+{\Lambda^{(t)}}&#39;\Lambda^{(t)})^{-1}({\Lambda^{(t)}}&#39;Z_i^{\star}),(I_q
++ {\Lambda^{(t)}}&#39;\Lambda^{(t)})^{-1}\right),\]</span> <span class="math display">\[\text{ where } Z_i^{\star}
+=(Z_{i1}^{\star},\ldots,Z_{iJ}^{\star}) \text{ such as } Z_{ij}^{\star}
+= Z_{ij}^{(t)}-\alpha_i^{(t-1)} - X_i\beta_j^{(t)}.\]</span></p></li>
+<li><p>Generate the <strong>random site effects</strong> <span class="math inline">\(\alpha_i^{(t)}\)</span> for <span class="math inline">\(i=1,\ldots,I\)</span> selon : <span class="math display">\[ \alpha_i | \ Z^{(t)}, \lambda^{(t)},
+\beta^{(t)}, W_i^{(t)} \sim \mathcal{N}\left(\dfrac{ \sum_{j=1}^J
+Z_{ij}^{(t)} - X_i\beta_j^{(t)} -
+W_i^{(t)}\lambda_j^{(t)}}{{V_{\alpha}^{(t-1)}}^{-1} + J} , \left(
+\frac{1}{V_{\alpha}^{(t-1)}}+ J \right)^{-1}  \right)\]</span></p></li>
+<li><p>Generate the <strong>variance of random site effects</strong>
+<span class="math inline">\(V_\alpha^{(t)}\)</span> according to: <span class="math display">\[V_\alpha^{(t)} \ | \
+\alpha_1^{(t)},\ldots,\alpha_I^{(t)} \sim \mathcal{IG}\left(
+\text{shape}=0.5 + \frac{I}{2}, \text{rate}=0.005 +
+\frac{1}{2}\sum\limits_{i=1}^I
+\left(\alpha_i^{(t)}\right)^2\right)\]</span></p></li>
 </ul></li>
 </ul>
 </div>
 </div>
-<div id="binomial-distribution-with-logit-link-function" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Binomial distribution with logit link function</h1>
-<div id="model-definition-1" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Model definition</h2>
-<p>In the same way as for the probit model, the logit model can be defined by means of a latent variable: <span class="math inline">\(Z_{ij}= \alpha_i + X_i\beta_j + W_i\lambda_j + \epsilon_{ij}\)</span> for <span class="math inline">\(i=1,\ldots,I\)</span> et <span class="math inline">\(j=1,\ldots,J\)</span>, with <span class="math inline">\(\epsilon_{ij} \sim \mathrm{logistique}(0,1)\)</span> <em>iid</em> and such as:
-<span class="math display">\[y_{ij}=
+<div id="binomial-distribution-with-logit-link-function" class="section level1">
+<h1>Binomial distribution with logit link function</h1>
+<div id="model-definition-1" class="section level2">
+<h2>Model definition</h2>
+<p>In the same way as for the probit model, the logit model can be
+defined by means of a latent variable: <span class="math inline">\(Z_{ij}= \alpha_i + X_i\beta_j + W_i\lambda_j +
+\epsilon_{ij}\)</span> for <span class="math inline">\(i=1,\ldots,I\)</span> et <span class="math inline">\(j=1,\ldots,J\)</span>, with <span class="math inline">\(\epsilon_{ij} \sim
+\mathrm{logistique}(0,1)\)</span> <em>iid</em> and such as: <span class="math display">\[y_{ij}=
 \begin{cases}
 1 &amp; \text{ if } Z_{ij} &gt; 0 \\
 0 &amp;  \text{ else }
-\end{cases}\]</span>
-However in this case the <em>a priori</em> distributions of the latent variable and the parameters are not conjugated, we are not able to use the properties of the conjugated priors, so modelling using a latent variable is irrelevant.<br />
-In this case it is assumed that <span class="math display">\[y_{ij} \ | \theta_{ij} \sim \mathcal{B}inomial(n_i,\theta_{ij})\]</span>, with
-<span class="math inline">\(\mathrm{probit(\theta_{ij})} = \alpha_i + X_i\beta_j+ W_i\lambda_j\)</span> and <span class="math inline">\(n_i\)</span> the number of visits to the site <span class="math inline">\(i\)</span>.<br />
-Therefore, the parameters of this model will be sampled by estimating their conditional <em>a posteriori</em> distributions using an adaptive Metropolis algorithm.</p>
+\end{cases}\]</span> However in this case the <em>a priori</em>
+distributions of the latent variable and the parameters are not
+conjugated, we are not able to use the properties of the conjugated
+priors, so modelling using a latent variable is irrelevant.<br />
+In this case it is assumed that <span class="math display">\[y_{ij} \ |
+\theta_{ij} \sim \mathcal{B}inomial(n_i,\theta_{ij})\]</span>, with
+<span class="math inline">\(\mathrm{probit(\theta_{ij})} = \alpha_i +
+X_i\beta_j+ W_i\lambda_j\)</span> and <span class="math inline">\(n_i\)</span> the number of visits to the site
+<span class="math inline">\(i\)</span>.<br />
+Therefore, the parameters of this model will be sampled by estimating
+their conditional <em>a posteriori</em> distributions using an adaptive
+Metropolis algorithm.</p>
 </div>
-<div id="priors-used" class="section level2" number="2.2">
-<h2><span class="header-section-number">2.2</span> Priors used</h2>
-<p>An <em>a priori</em> distribution is determined for each parameter of the model :<br />
+<div id="priors-used" class="section level2">
+<h2>Priors used</h2>
+<p>An <em>a priori</em> distribution is determined for each parameter of
+the model :<br />
 <span class="math display">\[\begin{array}{lll}
-V_{\alpha} &amp; \sim &amp; \mathcal {IG}(\text{shape}=0.5, \text{rate}=0.005) \text{ with } \mathrm{rate}=\frac{1}{\mathrm{scale}}, \\
+V_{\alpha} &amp; \sim &amp; \mathcal {IG}(\text{shape}=0.5,
+\text{rate}=0.005) \text{ with } \mathrm{rate}=\frac{1}{\mathrm{scale}},
+\\
 \beta_{jk} &amp; \sim &amp; \begin{cases}
-\mathcal{N}(\mu_{\beta_{jk}},V_{\beta_{k}}) \text{ for } j=1,\ldots,J \text{ and } k=0,\ldots,p, &amp; \text{if species traits data are provided} \\
-\text{ where } \mu_{\beta_{jk}} = \sum_{r=0}^{nt} t_{jr}.\gamma_{rk} \text{ and } \gamma_{rk} \sim \mathcal{N}(\mu_{\gamma_{rk}},V_{\gamma_{rk}}) &amp; \\
- \text{ for } r=0,\ldots,nt \text{ and } k=0,\ldots,p. &amp; \\
-\mathcal{N}(\mu_{\beta_{k}},V_{\beta_{k}})  \text{ for } j=1,\ldots,J \text{ and } k=0,\ldots,p,  &amp; \text{if species traits data are not provided} \\ 
+\mathcal{N}(\mu_{\beta_{jk}},V_{\beta_{k}}) \text{ for } j=1,\ldots,J
+\text{ and } k=0,\ldots,p, &amp; \text{if species traits data are
+provided} \\
+\text{ where } \mu_{\beta_{jk}} = \sum_{r=0}^{nt} t_{jr}.\gamma_{rk}
+\text{ and } \gamma_{rk} \sim
+\mathcal{N}(\mu_{\gamma_{rk}},V_{\gamma_{rk}}) &amp; \\
+\text{ for } r=0,\ldots,nt \text{ and } k=0,\ldots,p. &amp; \\
+\mathcal{N}(\mu_{\beta_{k}},V_{\beta_{k}})  \text{ for } j=1,\ldots,J
+\text{ and } k=0,\ldots,p,  &amp; \text{if species traits data are not
+provided} \\
 \end{cases} \\
 \lambda_{jl} &amp; \sim &amp; \begin{cases}
-\mathcal{N}(\mu_{\lambda_{l}},V_{\lambda_{l}}) &amp; \text{if } l &lt; j \\
-\mathcal{N}(\mu_{\lambda_{l}},V_{\lambda_{l}}) \text{ left truncated by } 0  &amp;  \text{if } l=j \\
-P \text{ such as } \mathbb{P}(\lambda_{jl} = 0)=1  &amp; \text{if } l&gt;j
+\mathcal{N}(\mu_{\lambda_{l}},V_{\lambda_{l}}) &amp; \text{if } l &lt; j
+\\
+\mathcal{N}(\mu_{\lambda_{l}},V_{\lambda_{l}}) \text{ left truncated by
+} 0  &amp;  \text{if } l=j \\
+P \text{ such as } \mathbb{P}(\lambda_{jl} = 0)=1  &amp; \text{if }
+l&gt;j
 \end{cases} \\
-\quad &amp;  \quad &amp; \text{ for } j=1,\ldots,J \text{ and } l=1,\ldots,q.
+\quad &amp;  \quad &amp; \text{ for } j=1,\ldots,J \text{ and }
+l=1,\ldots,q.
 \end{array}\]</span></p>
 </div>
-<div id="adaptive-metropolis-algorithm-principle" class="section level2" number="2.3">
-<h2><span class="header-section-number">2.3</span> Adaptive Metropolis algorithm principle</h2>
-<p>This algorithm belongs to the MCMC methods and allows to obtain a realization of the parameter <span class="math inline">\(\theta=(\theta_1,\ldots,,\theta_m)\)</span> according to their conditional <em>a posteriori</em> distributions <span class="math inline">\(\Pi(\theta_i | \theta_1,\dots,\theta_{i-1},\theta_{i+1},\ldots,\theta_m, x)\)</span>, for <span class="math inline">\(i =1,\ldots,m\)</span> known to within a multiplicative constant.<br />
-It is called adaptive because the variance of the conditional instrumental density used is adapted according to the number of acceptances in the last iterations.</p>
+<div id="adaptive-metropolis-algorithm-principle" class="section level2">
+<h2>Adaptive Metropolis algorithm principle</h2>
+<p>This algorithm belongs to the MCMC methods and allows to obtain a
+realization of the parameter <span class="math inline">\(\theta=(\theta_1,\ldots,,\theta_m)\)</span>
+according to their conditional <em>a posteriori</em> distributions <span class="math inline">\(\Pi(\theta_i |
+\theta_1,\dots,\theta_{i-1},\theta_{i+1},\ldots,\theta_m, x)\)</span>,
+for <span class="math inline">\(i =1,\ldots,m\)</span> known to within a
+multiplicative constant.<br />
+It is called adaptive because the variance of the conditional
+instrumental density used is adapted according to the number of
+acceptances in the last iterations.</p>
 <ul>
-<li><p><strong>Initialization</strong> : <span class="math inline">\(\theta^{(0)}= (\theta_1^{(0)},\ldots,\theta_m^{(0)})\)</span> arbitrarily set, the acceptance numbers <span class="math inline">\((n^A_{i})_{i=1,\ldots,m}\)</span> are initialized at <span class="math inline">\(0\)</span> and the variances <span class="math inline">\((\sigma^2_i)_{i=1,\ldots,m}\)</span> are initialized at <span class="math inline">\(1\)</span>.</p></li>
+<li><p><strong>Initialization</strong> : <span class="math inline">\(\theta^{(0)}=
+(\theta_1^{(0)},\ldots,\theta_m^{(0)})\)</span> arbitrarily set, the
+acceptance numbers <span class="math inline">\((n^A_{i})_{i=1,\ldots,m}\)</span> are initialized
+at <span class="math inline">\(0\)</span> and the variances <span class="math inline">\((\sigma^2_i)_{i=1,\ldots,m}\)</span> are
+initialized at <span class="math inline">\(1\)</span>.</p></li>
 <li><p><strong>Iteration t</strong> : for <span class="math inline">\(i=1,\ldots,m\)</span></p>
 <ul>
-<li><p>Generate <span class="math inline">\(\theta_i^\star \sim q(\theta_i^{(t-1)},.)\)</span>, with conditional instrumental density
-<span class="math inline">\(q(\theta_i^{(t-1)},\theta_i^\star)\)</span> symmetric, we will choose a law <span class="math inline">\(\mathcal{N}(\theta_i^{(t-1)},{\sigma^2_{i}})\)</span> for example.</p></li>
-<li><p>Calculate the probability of acceptance :
-<span class="math display">\[\gamma=  min\left(1,\dfrac{\Pi\left(\theta_i^\star \ | \ \theta_1^{(t-1)},\dots,\theta_{i-1}^{(t-1)},\theta_{i+1}^{(t-1)},\ldots,\theta_m^{(t-1)}, x \right)}{\Pi\left(\theta_i^{(t-1)} \ | \ \theta_1^{(t-1)},\dots,\theta_{i-1}^{ (t-1)},\theta_{i+1}^{(t-1)},\ldots,\theta_m^{(t-1)},x\right)}\right)\]</span>.</p></li>
+<li><p>Generate <span class="math inline">\(\theta_i^\star \sim
+q(\theta_i^{(t-1)},.)\)</span>, with conditional instrumental density
+<span class="math inline">\(q(\theta_i^{(t-1)},\theta_i^\star)\)</span>
+symmetric, we will choose a law <span class="math inline">\(\mathcal{N}(\theta_i^{(t-1)},{\sigma^2_{i}})\)</span>
+for example.</p></li>
+<li><p>Calculate the probability of acceptance : <span class="math display">\[\gamma=  min\left(1,\dfrac{\Pi\left(\theta_i^\star
+\ | \
+\theta_1^{(t-1)},\dots,\theta_{i-1}^{(t-1)},\theta_{i+1}^{(t-1)},\ldots,\theta_m^{(t-1)},
+x \right)}{\Pi\left(\theta_i^{(t-1)} \ | \
+\theta_1^{(t-1)},\dots,\theta_{i-1}^{
+(t-1)},\theta_{i+1}^{(t-1)},\ldots,\theta_m^{(t-1)},x\right)}\right)\]</span>.</p></li>
 <li><p><span class="math display">\[\theta_i^{(t)} =  
-\begin{cases} 
+\begin{cases}
 \theta_i^\star &amp; \text{ with probability } \gamma \\
-&amp;\text{ if we are in this case the acceptance number becomes : } n^A_{i} \leftarrow n^A_{i} +1 \\
+&amp;\text{ if we are in this case the acceptance number becomes : }
+n^A_{i} \leftarrow n^A_{i} +1 \\
 \theta_i^{(t-1)} &amp; \text{ with probability } 1-\gamma. \\
 \end{cases}\]</span></p></li>
 </ul></li>
-<li><p><strong>During the burn-in</strong>, every <span class="math inline">\(\mathrm{DIV}\)</span> iteration, with
-<span class="math display">\[\mathrm{DIV} =  \begin{cases} 
+<li><p><strong>During the burn-in</strong>, every <span class="math inline">\(\mathrm{DIV}\)</span> iteration, with <span class="math display">\[\mathrm{DIV} =  \begin{cases}
 100 &amp; \text{ if } N_{Gibbs} \geq 1000 \\
 \dfrac{N_{Gibbs}}{10}&amp; \text{ else }  \\
-\end{cases}\]</span>
-, where <span class="math inline">\(N_{Gibbs}\)</span> is the total number of iterations performed.<br />
-The variances are modified as a function of the acceptance numbers as follows for <span class="math inline">\(i=1,\ldots,m\)</span> :</p>
+\end{cases}\]</span> , where <span class="math inline">\(N_{Gibbs}\)</span> is the total number of
+iterations performed.<br />
+The variances are modified as a function of the acceptance numbers as
+follows for <span class="math inline">\(i=1,\ldots,m\)</span> :</p>
 <ul>
-<li><p>The acceptance rate is calculated : <span class="math inline">\(r^A_{i} = \dfrac{ n^A_i}{\mathrm{DIV}}\)</span>.</p></li>
-<li><p>The variances are adapted according to the acceptance rate and a fixed constant <span class="math inline">\(R_{opt}\)</span> :
-<span class="math display">\[\sigma_i \leftarrow \begin{cases}  
-\sigma_i\left(2-\dfrac{1-r^A_i}{1-R_{opt}}\right) &amp; \text{ if } r^A_{i} \geq R_{opt} \\ \\
+<li><p>The acceptance rate is calculated : <span class="math inline">\(r^A_{i} = \dfrac{
+n^A_i}{\mathrm{DIV}}\)</span>.</p></li>
+<li><p>The variances are adapted according to the acceptance rate and a
+fixed constant <span class="math inline">\(R_{opt}\)</span> : <span class="math display">\[\sigma_i \leftarrow \begin{cases}  
+\sigma_i\left(2-\dfrac{1-r^A_i}{1-R_{opt}}\right) &amp; \text{ if }
+r^A_{i} \geq R_{opt} \\ \\
 \dfrac{\sigma_i}{2-\dfrac{1-r^A_i}{1-R_{opt}}} &amp; \text{ else }
 \end{cases}\]</span></p></li>
 <li><p>We reset the acceptance numbers : <span class="math inline">\(n^A_i \leftarrow 0\)</span>.</p></li>
 </ul></li>
-<li><p>Every <span class="math inline">\(\dfrac{N_{Gibbs}}{10}\)</span> iteration, average acceptance rates are calculated and displayed <span class="math inline">\(m^A = \dfrac{1}{m}\sum\limits_{i=1,\ldots,m}r^A_i\)</span>.</p></li>
+<li><p>Every <span class="math inline">\(\dfrac{N_{Gibbs}}{10}\)</span>
+iteration, average acceptance rates are calculated and displayed <span class="math inline">\(m^A =
+\dfrac{1}{m}\sum\limits_{i=1,\ldots,m}r^A_i\)</span>.</p></li>
 </ul>
 </div>
-<div id="gibbs-sampler-using-adaptative-metropolis-algorithm" class="section level2" number="2.4">
-<h2><span class="header-section-number">2.4</span> Gibbs sampler using adaptative Metropolis algorithm</h2>
-<p>An adaptive Metropolis algorithm is used to sample the model parameters according to their conditional <em>a posteriori</em> distributions estimated to within one multiplicative constant.</p>
-<p>First we define the <span class="math inline">\(f\)</span> function that calculates the likelihood of the model as a function of the estimated parameters:<br />
-<span class="math display">\[ f : \lambda_j,\beta_j,\alpha_i, W_i, X_i, y_{ij},n_i \rightarrow  f(\lambda_j,\beta_j,\alpha_i, W_i, X_i, y_{ij},n_i)=\mathrm{L}(\theta_{ij})\]</span>
-- Compute <span class="math inline">\(\mathrm{logit}(\theta_{ij})= \alpha_i + X_i\beta_j + W_i\lambda_j\)</span>.</p>
+<div id="gibbs-sampler-using-adaptative-metropolis-algorithm" class="section level2">
+<h2>Gibbs sampler using adaptative Metropolis algorithm</h2>
+<p>An adaptive Metropolis algorithm is used to sample the model
+parameters according to their conditional <em>a posteriori</em>
+distributions estimated to within one multiplicative constant.</p>
+<p>First we define the <span class="math inline">\(f\)</span> function
+that calculates the likelihood of the model as a function of the
+estimated parameters:<br />
+<span class="math display">\[ f : \lambda_j,\beta_j,\alpha_i, W_i, X_i,
+y_{ij},n_i \rightarrow  f(\lambda_j,\beta_j,\alpha_i, W_i, X_i,
+y_{ij},n_i)=\mathrm{L}(\theta_{ij})\]</span> - Compute <span class="math inline">\(\mathrm{logit}(\theta_{ij})= \alpha_i + X_i\beta_j
++ W_i\lambda_j\)</span>.</p>
 <ul>
-<li><p>Compute <span class="math inline">\(\theta_{ij}= \dfrac{1}{1+\exp\left(-\mathrm{logit}(\theta_{ij})\right)}\)</span>.</p></li>
-<li><p>Return <span class="math inline">\(\mathrm{L}(\theta_{ij})= p(y_{ij} \ | \ \theta_{ij},n_i)= \dbinom{n_i}{y_{ij}}(\theta_{ij})^{y_{ij}}(1-\theta_{ij})^{n_i-y_{ij}}\)</span>.</p></li>
+<li><p>Compute <span class="math inline">\(\theta_{ij}=
+\dfrac{1}{1+\exp\left(-\mathrm{logit}(\theta_{ij})\right)}\)</span>.</p></li>
+<li><p>Return <span class="math inline">\(\mathrm{L}(\theta_{ij})=
+p(y_{ij} \ | \ \theta_{ij},n_i)=
+\dbinom{n_i}{y_{ij}}(\theta_{ij})^{y_{ij}}(1-\theta_{ij})^{n_i-y_{ij}}\)</span>.</p></li>
 </ul>
-<p>We repeat those steps for <span class="math inline">\(i=1,\ldots,I\)</span> et <span class="math inline">\(j=1,\ldots,J\)</span>, and then we define <span class="math inline">\(\theta = \left(\theta{ij}\right)_{i=1,\ldots I}^{j= 1,\ldots,J}\)</span>.<br />
-This allows us to calculate the likelihood of the model: <span class="math inline">\(\mathrm{L}(\theta)= \prod\limits_{\substack{1\leq i\leq I \\ 1 \leq j\leq I}}\mathrm{L}(\theta_{ij})\)</span>.</p>
-<p>According to Bayes’ formula we have <span class="math display">\[\mathrm{p}(\theta \ |  \ Y) \propto \Pi(\theta) \mathrm{L}(\theta).\]</span>
-We thus use the following relations to approach the conditional <em>a posteriori</em> densities of each of the parameters with <span class="math inline">\(\Pi(.)\)</span> the densities corresponding to their <em>a priori</em> laws.
-<span class="math display">\[\begin{aligned}
-&amp; p(\beta_{jk} \ |  \ \beta_{j0},\beta_{j1},\ldots,\beta_{jk-1},\beta_{jk+1},\ldots,\beta_{jp}, \lambda_j,\alpha_1,\ldots,\alpha_I, W_1,\ldots,W_I,Y) \propto \Pi(\beta_{jk})\prod\limits_{1\leq i\leq I}  \mathrm{L}(\theta_{ij})\\
-&amp;p(\lambda_{jl} \ |  \ \lambda_{j1},\ldots,\lambda_{jl-1},\lambda_{jl+1},\ldots,\lambda_{jq}, \beta_j,\alpha_1,\ldots,\alpha_I, W_1,\ldots,W_I,Y) \propto  \Pi(\lambda_{jl}) \prod\limits_{1\leq i \leq I}\mathrm{L}(\theta_{ij})\\
-&amp;p(W_{il} \ |  \ W_{i1},\ldots,W_{il-1},W_{il+1},\ldots,W_{iq},\alpha_i,\beta_1,\ldots,\beta_J,\lambda_1,\ldots, \lambda_J,Y) \propto \Pi(W_{il}) \prod\limits_{1\leq j\leq J}\mathrm{L}(\theta_{ij})\\
-&amp;p(\alpha_i \ |  \ W_i,\beta_1,\ldots,\beta_J,\lambda_1,\ldots, \lambda_j,V_{\alpha},Y) \propto \Pi(\alpha_i \ | \ V_{\alpha}) \prod\limits_{1\leq j\leq J}\mathrm{L}(\theta_{ij})\\
-&amp; \text{, for $i=1,\ldots,I$, $j=1,\ldots,J$, $k=1,\ldots,p$ and $l=1,\ldots,q$. 
+<p>We repeat those steps for <span class="math inline">\(i=1,\ldots,I\)</span> et <span class="math inline">\(j=1,\ldots,J\)</span>, and then we define <span class="math inline">\(\theta = \left(\theta{ij}\right)_{i=1,\ldots
+I}^{j= 1,\ldots,J}\)</span>.<br />
+This allows us to calculate the likelihood of the model: <span class="math inline">\(\mathrm{L}(\theta)= \prod\limits_{\substack{1\leq
+i\leq I \\ 1 \leq j\leq I}}\mathrm{L}(\theta_{ij})\)</span>.</p>
+<p>According to Bayes’ formula we have <span class="math display">\[\mathrm{p}(\theta \ |  \ Y) \propto \Pi(\theta)
+\mathrm{L}(\theta).\]</span> We thus use the following relations to
+approach the conditional <em>a posteriori</em> densities of each of the
+parameters with <span class="math inline">\(\Pi(.)\)</span> the
+densities corresponding to their <em>a priori</em> laws. <span class="math display">\[\begin{aligned}
+&amp; p(\beta_{jk} \ |  \
+\beta_{j0},\beta_{j1},\ldots,\beta_{jk-1},\beta_{jk+1},\ldots,\beta_{jp},
+\lambda_j,\alpha_1,\ldots,\alpha_I, W_1,\ldots,W_I,Y) \propto
+\Pi(\beta_{jk})\prod\limits_{1\leq i\leq I}  \mathrm{L}(\theta_{ij})\\
+&amp;p(\lambda_{jl} \ |  \
+\lambda_{j1},\ldots,\lambda_{jl-1},\lambda_{jl+1},\ldots,\lambda_{jq},
+\beta_j,\alpha_1,\ldots,\alpha_I, W_1,\ldots,W_I,Y)
+\propto  \Pi(\lambda_{jl}) \prod\limits_{1\leq i \leq
+I}\mathrm{L}(\theta_{ij})\\
+&amp;p(W_{il} \ |  \
+W_{i1},\ldots,W_{il-1},W_{il+1},\ldots,W_{iq},\alpha_i,\beta_1,\ldots,\beta_J,\lambda_1,\ldots,
+\lambda_J,Y) \propto \Pi(W_{il}) \prod\limits_{1\leq j\leq
+J}\mathrm{L}(\theta_{ij})\\
+&amp;p(\alpha_i \ |  \ W_i,\beta_1,\ldots,\beta_J,\lambda_1,\ldots,
+\lambda_j,V_{\alpha},Y) \propto \Pi(\alpha_i \ | \ V_{\alpha})
+\prod\limits_{1\leq j\leq J}\mathrm{L}(\theta_{ij})\\
+&amp; \text{, for $i=1,\ldots,I$, $j=1,\ldots,J$, $k=1,\ldots,p$ and
+$l=1,\ldots,q$.
 }
 \end{aligned}\]</span></p>
-<p>The algorithm implemented in <code>jSDM_binomial_logit()</code> on the basis of <span class="citation"><a href="#ref-Rosenthal2009" role="doc-biblioref">Rosenthal</a> (<a href="#ref-Rosenthal2009" role="doc-biblioref">2009</a>)</span> and <span class="citation"><a href="#ref-Roberts2001" role="doc-biblioref">Roberts &amp; Rosenthal</a> (<a href="#ref-Roberts2001" role="doc-biblioref">2001</a>)</span> articles, to estimate the parameters of the logit model is the following :</p>
+<p>The algorithm implemented in <code>jSDM_binomial_logit()</code> on
+the basis of <span class="citation">Rosenthal (<a href="#ref-Rosenthal2009" role="doc-biblioref">2009</a>)</span> and
+<span class="citation">Roberts &amp; Rosenthal (<a href="#ref-Roberts2001" role="doc-biblioref">2001</a>)</span> articles,
+to estimate the parameters of the logit model is the following :</p>
 <ul>
-<li><p>Definition of constants <span class="math inline">\(N_{Gibbs}\)</span>, <span class="math inline">\(N_{burn}\)</span>, <span class="math inline">\(N_{thin}\)</span> and <span class="math inline">\(R_{opt}\)</span> such that <span class="math inline">\(N_{Gibbs}\)</span> corresponds to the number of iterations performed by the algorithm, <span class="math inline">\(N_{burn}\)</span> to the number of iterations required for the burn-in or warm-up time,<br />
-<span class="math inline">\(N_{samp}= \dfrac{N_{Gibbs}-N_{burn}}{N_{thin}}\)</span> corresponding to the number of estimated values retained for each parameter. Indeed we record the estimated parameters at certain iterations in order to obtain <span class="math inline">\(N_{samp}\)</span> values, allowing us to represent a <span class="math inline">\(a \ posteriori\)</span> distribution for each parameter.<br />
-We set <span class="math inline">\(R_{opt}\)</span> the optimal acceptance ratio used in the adaptive Metropolis algorithms implemented for each parameter of the model.</p></li>
-<li><p>Initialize all parameters to <span class="math inline">\(0\)</span> for example, except the diagonal values of <span class="math inline">\(\Lambda\)</span> initialized at <span class="math inline">\(1\)</span> and <span class="math inline">\(V_{\alpha}^{(0)}=1\)</span>. The acceptance number of each parameter is initialized to <span class="math inline">\(0\)</span> and the variances of their conditional instrumental densities take the value <span class="math inline">\(1\)</span>.</p></li>
-<li><p><strong>Gibbs sampler</strong> at each iteration <span class="math inline">\(t\)</span> for <span class="math inline">\(t=1,\ldots,N_{Gibbs}\)</span> we repeat each of these steps:</p>
+<li><p>Definition of constants <span class="math inline">\(N_{Gibbs}\)</span>, <span class="math inline">\(N_{burn}\)</span>, <span class="math inline">\(N_{thin}\)</span> and <span class="math inline">\(R_{opt}\)</span> such that <span class="math inline">\(N_{Gibbs}\)</span> corresponds to the number of
+iterations performed by the algorithm, <span class="math inline">\(N_{burn}\)</span> to the number of iterations
+required for the burn-in or warm-up time,<br />
+<span class="math inline">\(N_{samp}=
+\dfrac{N_{Gibbs}-N_{burn}}{N_{thin}}\)</span> corresponding to the
+number of estimated values retained for each parameter. Indeed we record
+the estimated parameters at certain iterations in order to obtain <span class="math inline">\(N_{samp}\)</span> values, allowing us to represent
+a <span class="math inline">\(a \ posteriori\)</span> distribution for
+each parameter.<br />
+We set <span class="math inline">\(R_{opt}\)</span> the optimal
+acceptance ratio used in the adaptive Metropolis algorithms implemented
+for each parameter of the model.</p></li>
+<li><p>Initialize all parameters to <span class="math inline">\(0\)</span> for example, except the diagonal values
+of <span class="math inline">\(\Lambda\)</span> initialized at <span class="math inline">\(1\)</span> and <span class="math inline">\(V_{\alpha}^{(0)}=1\)</span>. The acceptance number
+of each parameter is initialized to <span class="math inline">\(0\)</span> and the variances of their conditional
+instrumental densities take the value <span class="math inline">\(1\)</span>.</p></li>
+<li><p><strong>Gibbs sampler</strong> at each iteration <span class="math inline">\(t\)</span> for <span class="math inline">\(t=1,\ldots,N_{Gibbs}\)</span> we repeat each of
+these steps:</p>
 <ul>
-<li><p>Generate the <strong>random site effects</strong> <span class="math inline">\(\alpha_i^{(t)}\)</span> for <span class="math inline">\(i=1,\ldots,I\)</span> according to an adaptive Metropolis algorithm that simulates <span class="math inline">\(\alpha_i^\star \sim \mathcal{N}(\alpha_i^{(t-1)},\sigma_{\alpha_i}^2)\)</span> and then calculates the acceptance rate as follows:<br />
-<span class="math display">\[\gamma =min\left(1, \ \dfrac{\Pi\left(\alpha_i^\star \ | \ V_{\alpha}^{(t-1)}\right)\prod\limits_{1\leq j\leq J}\left(\alpha_i^\star, W_i^{(t-1)},\beta_j^{(t-1)}, \lambda_j^{(t-1)}, X_i,y_{ij},n_i\right)}{\Pi\left(\alpha_i^{(t-1)} \ | \ V_{\alpha}^{(t-1)}\right)\prod\limits_{1\leq j\leq J}f\left(\alpha_i^{(t-1)}, W_i^{(t-1)},\beta_j^{(t-1)}, \lambda_j^{(t-1)}, X_i,y_{ij},n_i\right)}\right).\]</span></p></li>
-<li><p>Generate the <strong>variance of random site effects</strong> <span class="math inline">\(V_\alpha^{(t)}\)</span> according to: <span class="math display">\[V_\alpha^{(t)} \ | \ \alpha_1^{(t)},\ldots,\alpha_I^{(t)} \sim \mathcal{IG}\left( \text{shape}=0.5 + \frac{I}{2}, \text{rate}=0.005 + \frac{1}{2}\sum\limits_{i=1}^I \left(\alpha_i^{(t)}\right)^2\right)\]</span></p></li>
-<li><p>Generate the <strong>latent variables</strong> (or unmeasured predictors) <span class="math inline">\(W_{il}^{(t)}\)</span> for <span class="math inline">\(i=1,\ldots,I\)</span> and <span class="math inline">\(l=1,\ldots,q\)</span> according to an adaptive Metropolis algorithm that simulates <span class="math inline">\(W_{il}^\star \sim \mathcal{N}(W_{il}^{(t-1)}, \sigma_{W_{il}}^2)\)</span>and then calculates the acceptance rate as follows:</p></li>
+<li><p>Generate the <strong>random site effects</strong> <span class="math inline">\(\alpha_i^{(t)}\)</span> for <span class="math inline">\(i=1,\ldots,I\)</span> according to an adaptive
+Metropolis algorithm that simulates <span class="math inline">\(\alpha_i^\star \sim
+\mathcal{N}(\alpha_i^{(t-1)},\sigma_{\alpha_i}^2)\)</span> and then
+calculates the acceptance rate as follows:<br />
+<span class="math display">\[\gamma =min\left(1, \
+\dfrac{\Pi\left(\alpha_i^\star \ | \
+V_{\alpha}^{(t-1)}\right)\prod\limits_{1\leq j\leq
+J}\left(\alpha_i^\star, W_i^{(t-1)},\beta_j^{(t-1)}, \lambda_j^{(t-1)},
+X_i,y_{ij},n_i\right)}{\Pi\left(\alpha_i^{(t-1)} \ | \
+V_{\alpha}^{(t-1)}\right)\prod\limits_{1\leq j\leq
+J}f\left(\alpha_i^{(t-1)}, W_i^{(t-1)},\beta_j^{(t-1)},
+\lambda_j^{(t-1)}, X_i,y_{ij},n_i\right)}\right).\]</span></p></li>
+<li><p>Generate the <strong>variance of random site effects</strong>
+<span class="math inline">\(V_\alpha^{(t)}\)</span> according to: <span class="math display">\[V_\alpha^{(t)} \ | \
+\alpha_1^{(t)},\ldots,\alpha_I^{(t)} \sim \mathcal{IG}\left(
+\text{shape}=0.5 + \frac{I}{2}, \text{rate}=0.005 +
+\frac{1}{2}\sum\limits_{i=1}^I
+\left(\alpha_i^{(t)}\right)^2\right)\]</span></p></li>
+<li><p>Generate the <strong>latent variables</strong> (or unmeasured
+predictors) <span class="math inline">\(W_{il}^{(t)}\)</span> for <span class="math inline">\(i=1,\ldots,I\)</span> and <span class="math inline">\(l=1,\ldots,q\)</span> according to an adaptive
+Metropolis algorithm that simulates <span class="math inline">\(W_{il}^\star \sim \mathcal{N}(W_{il}^{(t-1)},
+\sigma_{W_{il}}^2)\)</span>and then calculates the acceptance rate as
+follows:</p></li>
 </ul></li>
 </ul>
-<p><span class="math display">\[\gamma = min\left(1,\ \dfrac{\Pi\left(W_{il}^\star\right)\prod\limits_{1\leq j\leq J}f\left(W_{il}^\star, \alpha_i^{(t)},\beta_j^{(t-1)}, \lambda_j^{(t-1)},X_i,y_{ij},n_i\right)} {\Pi\left(W_{il}^{(t-1)}\right)\prod\limits_{1\leq j\leq J}f\left(W_{il}^{(t-1)}, \alpha_i^{(t)},\beta_j^{(t-1)}, \lambda_j^{(t-1)}, X_i,y_{ij},n_i\right)}\right).\]</span>
-* If species traits data are provided, generate the <strong>effects of species-specific traits on species’ responses</strong> <span class="math inline">\(\gamma^{(t)}=\left(\gamma_{rk}^{(t)}\right)^{r=0,\ldots,nt}_{k=0,\ldots,p}\)</span> such as :
-<span class="math display">\[\gamma_{rk}^{(t)} \ | \beta_{1k}^{(t-1)}, \ldots, \beta_{Jk}^{(t-1)} \sim \mathcal{N}(m^\star,V^\star) \text{, with }\]</span>
-<span class="math display">\[m^\star = (V_{\gamma_{rk}}^{-1} + T_r&#39;T_r)^{-1}(V_{\gamma_{rk}}^{-1}\mu_{\gamma_{rk}} + T_r\left(\beta_k^{(t-1)} - \sum\limits_{r&#39; \neq r} T_{r&#39;} \gamma_{r&#39;k}^{(t-1)} \right) \text{ and } V^\star = \left(V_{\gamma_{rk}}^{-1}+ T_r&#39;T_r\right)^{-1}.\]</span></p>
+<p><span class="math display">\[\gamma = min\left(1,\
+\dfrac{\Pi\left(W_{il}^\star\right)\prod\limits_{1\leq j\leq
+J}f\left(W_{il}^\star, \alpha_i^{(t)},\beta_j^{(t-1)},
+\lambda_j^{(t-1)},X_i,y_{ij},n_i\right)}
+{\Pi\left(W_{il}^{(t-1)}\right)\prod\limits_{1\leq j\leq
+J}f\left(W_{il}^{(t-1)}, \alpha_i^{(t)},\beta_j^{(t-1)},
+\lambda_j^{(t-1)}, X_i,y_{ij},n_i\right)}\right).\]</span> * If species
+traits data are provided, generate the <strong>effects of
+species-specific traits on species’ responses</strong> <span class="math inline">\(\gamma^{(t)}=\left(\gamma_{rk}^{(t)}\right)^{r=0,\ldots,nt}_{k=0,\ldots,p}\)</span>
+such as : <span class="math display">\[\gamma_{rk}^{(t)} \ |
+\beta_{1k}^{(t-1)}, \ldots, \beta_{Jk}^{(t-1)} \sim
+\mathcal{N}(m^\star,V^\star) \text{, with }\]</span> <span class="math display">\[m^\star = (V_{\gamma_{rk}}^{-1} +
+T_r&#39;T_r)^{-1}(V_{\gamma_{rk}}^{-1}\mu_{\gamma_{rk}} +
+T_r\left(\beta_k^{(t-1)} - \sum\limits_{r&#39; \neq r} T_{r&#39;}
+\gamma_{r&#39;k}^{(t-1)} \right) \text{ and } V^\star =
+\left(V_{\gamma_{rk}}^{-1}+ T_r&#39;T_r\right)^{-1}.\]</span></p>
 <ul>
-<li>Generate the <strong>fixed species effects</strong> <span class="math inline">\(\beta_{jk}^{(t)}\)</span> for <span class="math inline">\(j=1,\ldots,J\)</span> and <span class="math inline">\(k=0,\ldots,p\)</span> using an adaptive Metropolis algorithm that simulates <span class="math inline">\(\beta_{jk}^\star \sim \mathcal{N}(\beta_{jk}^{(t-1)}, \sigma_{\beta_{jk}}^2)\)</span> and then calculates the acceptance rate as follows:</li>
+<li>Generate the <strong>fixed species effects</strong> <span class="math inline">\(\beta_{jk}^{(t)}\)</span> for <span class="math inline">\(j=1,\ldots,J\)</span> and <span class="math inline">\(k=0,\ldots,p\)</span> using an adaptive Metropolis
+algorithm that simulates <span class="math inline">\(\beta_{jk}^\star
+\sim \mathcal{N}(\beta_{jk}^{(t-1)}, \sigma_{\beta_{jk}}^2)\)</span> and
+then calculates the acceptance rate as follows:</li>
 </ul>
-<p><span class="math display">\[\gamma = min\left(1,\dfrac{\Pi\left(\beta_{jk}^\star\right)\prod\limits_{1\leq i\leq I}f\left(\beta_{j0}^{(t)},\small{\ldots},\beta_{jk-1}^{(t)},\beta_{jk}^\star,\beta_{jk+1}^{(t-1)},\small{\ldots}, \beta_{jp}^{(t-1)},\lambda_j^{(t-1)}, \alpha_1^{(t)},W_1^{(t)},\small{\ldots},\alpha_I^{(t)},  W_I^{(t)},X_i,y_{ij},n_i\right)} {\Pi\left(\beta_{jk}^{(t-1)}\right)\prod\limits_{1\leq i\leq I}f\left(\beta_{j0}^{(t)},\small{\ldots},\beta_{jk-1}^{(t)},\beta_{jk}^{(t-1)},\beta_{jk+1}^{(t-1)},\small{\ldots}, \beta_{jp}^{(t-1)},\lambda_j^{(t-1)}, \alpha_1^{(t)},W_1^{(t)}, \small{\ldots},\alpha_I^{(t)},  W_I^{(t)},X_i,y_{ij},n_i\right)}\right).\]</span></p>
+<p><span class="math display">\[\gamma =
+min\left(1,\dfrac{\Pi\left(\beta_{jk}^\star\right)\prod\limits_{1\leq
+i\leq
+I}f\left(\beta_{j0}^{(t)},\small{\ldots},\beta_{jk-1}^{(t)},\beta_{jk}^\star,\beta_{jk+1}^{(t-1)},\small{\ldots},
+\beta_{jp}^{(t-1)},\lambda_j^{(t-1)},
+\alpha_1^{(t)},W_1^{(t)},\small{\ldots},\alpha_I^{(t)},  W_I^{(t)},X_i,y_{ij},n_i\right)}
+{\Pi\left(\beta_{jk}^{(t-1)}\right)\prod\limits_{1\leq i\leq
+I}f\left(\beta_{j0}^{(t)},\small{\ldots},\beta_{jk-1}^{(t)},\beta_{jk}^{(t-1)},\beta_{jk+1}^{(t-1)},\small{\ldots},
+\beta_{jp}^{(t-1)},\lambda_j^{(t-1)}, \alpha_1^{(t)},W_1^{(t)},
+\small{\ldots},\alpha_I^{(t)},  W_I^{(t)},X_i,y_{ij},n_i\right)}\right).\]</span></p>
 <ul>
-<li>Generate the <strong>loading factors related to latent variables</strong> <span class="math inline">\(\lambda_{jl}^{(t)}\)</span> for <span class="math inline">\(j=1,\ldots,J\)</span> and <span class="math inline">\(l=1,\ldots,q\)</span> according to an adaptive Metropolis algorithm for <span class="math inline">\(l \leq j\)</span>, simulating <span class="math inline">\(\lambda_{jl}^\star \sim \mathcal{N}(\lambda_{jl}^{(t-1)},\sigma_{\lambda_{jl}}^2)\)</span> and then calculating the acceptance rate as follows: :
-<span class="math display">\[\gamma = min\left(1,\dfrac{\Pi\left(\lambda_{jl}^\star\right)\prod\limits_{1\leq i\leq I}f\left(\lambda_{j1}^{(t)},\small{\ldots},\lambda_{jl-1}^{(t)},\lambda_{jl}^\star,\lambda_{jl+1}^{(t-1)},\small{\ldots}, \lambda_{jq}^{(t-1)},\beta_j^{(t)}, \alpha_1^{(t)},W_1^{(t)},\small{\ldots},\alpha_I^{(t)},  W_I^{(t)},X_i,y_{ij},n_i\right)} {\Pi\left(\lambda_{jl}^{(t-1)}\right)\prod\limits_{1\leq i\leq I}f\left(\lambda_{j1}^{(t)},\small{\ldots},\lambda_{jl-1}^{(t)},\lambda_{jl}^{(t-1)},\lambda_{jl+1}^{(t-1)},\small{\ldots}, \lambda_{jq}^{(t-1)},\beta_j^{(t)}, \alpha_1^{(t)},W_1^{(t)},\small{\ldots},\alpha_I^{(t)},  W_I^{(t)},X_i,y_{ij},n_i\right)}\right).\]</span>
+<li>Generate the <strong>loading factors related to latent
+variables</strong> <span class="math inline">\(\lambda_{jl}^{(t)}\)</span> for <span class="math inline">\(j=1,\ldots,J\)</span> and <span class="math inline">\(l=1,\ldots,q\)</span> according to an adaptive
+Metropolis algorithm for <span class="math inline">\(l \leq j\)</span>,
+simulating <span class="math inline">\(\lambda_{jl}^\star \sim
+\mathcal{N}(\lambda_{jl}^{(t-1)},\sigma_{\lambda_{jl}}^2)\)</span> and
+then calculating the acceptance rate as follows: : <span class="math display">\[\gamma =
+min\left(1,\dfrac{\Pi\left(\lambda_{jl}^\star\right)\prod\limits_{1\leq
+i\leq
+I}f\left(\lambda_{j1}^{(t)},\small{\ldots},\lambda_{jl-1}^{(t)},\lambda_{jl}^\star,\lambda_{jl+1}^{(t-1)},\small{\ldots},
+\lambda_{jq}^{(t-1)},\beta_j^{(t)},
+\alpha_1^{(t)},W_1^{(t)},\small{\ldots},\alpha_I^{(t)},  W_I^{(t)},X_i,y_{ij},n_i\right)}
+{\Pi\left(\lambda_{jl}^{(t-1)}\right)\prod\limits_{1\leq i\leq
+I}f\left(\lambda_{j1}^{(t)},\small{\ldots},\lambda_{jl-1}^{(t)},\lambda_{jl}^{(t-1)},\lambda_{jl+1}^{(t-1)},\small{\ldots},
+\lambda_{jq}^{(t-1)},\beta_j^{(t)},
+\alpha_1^{(t)},W_1^{(t)},\small{\ldots},\alpha_I^{(t)},  W_I^{(t)},X_i,y_{ij},n_i\right)}\right).\]</span>
 In the case of <span class="math inline">\(l&gt;j\)</span>, we put <span class="math inline">\(\lambda_{jl}^{(t)} = 0\)</span>.</li>
 </ul>
 </div>
 </div>
-<div id="poisson-distribution-with-log-link-function" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Poisson distribution with log link function</h1>
-<div id="model-definition-2" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Model definition</h2>
-<p>According to the article <span class="citation"><a href="#ref-Hui2016" role="doc-biblioref">Hui</a> (<a href="#ref-Hui2016" role="doc-biblioref">2016</a>)</span>, we can use the Poisson distribution for the analysis of multivariate abundance data, with estimation performed using Bayesian Markov chain Monte Carlo methods.</p>
-<p>In this case, it is assumed that <span class="math display">\[y_{ij} \sim \mathcal{P}oisson(\theta_{ij})\]</span>, with
-<span class="math inline">\(\mathrm{log}(\theta_{ij}) = \alpha_i + X_i\beta_j+ W_i\lambda_j\)</span>.</p>
-<p>We therefore consider abundance data with a response variable noted : <span class="math inline">\(Y=(y_{ij})^{i=1,\ldots,nsite}_{j=1,\ldots,nsp}\)</span> such as :</p>
+<div id="poisson-distribution-with-log-link-function" class="section level1">
+<h1>Poisson distribution with log link function</h1>
+<div id="model-definition-2" class="section level2">
+<h2>Model definition</h2>
+<p>According to the article <span class="citation">Hui (<a href="#ref-Hui2016" role="doc-biblioref">2016</a>)</span>, we can use
+the Poisson distribution for the analysis of multivariate abundance
+data, with estimation performed using Bayesian Markov chain Monte Carlo
+methods.</p>
+<p>In this case, it is assumed that <span class="math display">\[y_{ij}
+\sim \mathcal{P}oisson(\theta_{ij})\]</span>, with <span class="math inline">\(\mathrm{log}(\theta_{ij}) = \alpha_i + X_i\beta_j+
+W_i\lambda_j\)</span>.</p>
+<p>We therefore consider abundance data with a response variable noted :
+<span class="math inline">\(Y=(y_{ij})^{i=1,\ldots,nsite}_{j=1,\ldots,nsp}\)</span>
+such as :</p>
 <p><span class="math display">\[y_{ij}=\begin{cases}
-    0 &amp; \text{if species $j$ has been observed as absent at site $i$}\\
-    n &amp;  \text{if $n$ individuals of the species $j$ have been observed at the site $i$}.
+    0 &amp; \text{if species $j$ has been observed as absent at site
+$i$}\\
+    n &amp;  \text{if $n$ individuals of the species $j$ have been
+observed at the site $i$}.
     \end{cases}\]</span></p>
 </div>
-<div id="gibbs-sampler-using-adaptative-metropolis-algorithm-1" class="section level2" number="3.2">
-<h2><span class="header-section-number">3.2</span> Gibbs sampler using adaptative Metropolis algorithm</h2>
-<p>In this case, we cannot use the properties of the conjugate priors, therefore, the parameters of this model will be sampled by estimating their conditional <em>a posteriori</em> distributions using an adaptive Metropolis algorithm in the Gibbs sampler, in the same way as for the logit model.</p>
-<p>We use the same algorithm as before by replacing the logit link function by a log link function and the binomial distribution by a poisson’s law to calculate the likelihood of the model in the function <code>jSDM_poisson_log()</code>.</p>
+<div id="gibbs-sampler-using-adaptative-metropolis-algorithm-1" class="section level2">
+<h2>Gibbs sampler using adaptative Metropolis algorithm</h2>
+<p>In this case, we cannot use the properties of the conjugate priors,
+therefore, the parameters of this model will be sampled by estimating
+their conditional <em>a posteriori</em> distributions using an adaptive
+Metropolis algorithm in the Gibbs sampler, in the same way as for the
+logit model.</p>
+<p>We use the same algorithm as before by replacing the logit link
+function by a log link function and the binomial distribution by a
+poisson’s law to calculate the likelihood of the model in the function
+<code>jSDM_poisson_log()</code>.</p>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
-<h1>References</h1>
+<h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Albert1993" class="csl-entry">
-Albert, J.H. &amp; Siddhartha, C. (1993) Bayesian analysis of binary and polychotomous response data. <em>Journal of the American Statistical Association</em>, <strong>88</strong>, 669–679.
+Albert, J.H. &amp; Siddhartha, C. (1993) <a href="https://doi.org/10.1080/01621459.1993.10476321">Bayesian analysis
+of binary and polychotomous response data</a>. <em>Journal of the
+American Statistical Association</em>, <strong>88</strong>, 669–679.
 </div>
 <div id="ref-Hui2016" class="csl-entry">
-Hui, F.K.C. (2016) Boral – <span>Bayesian</span> <span>Ordination</span> and <span>Regression</span> <span>Analysis</span> of <span>Multivariate</span> <span>Abundance</span> <span>Data</span> in r. <em>Methods in Ecology and Evolution</em>, <strong>7</strong>, 744–750.
+Hui, F.K.C. (2016) <a href="https://doi.org/10.1111/2041-210X.12514">Boral –
+<span>Bayesian</span> <span>Ordination</span> and
+<span>Regression</span> <span>Analysis</span> of
+<span>Multivariate</span> <span>Abundance</span> <span>Data</span> in
+r</a>. <em>Methods in Ecology and Evolution</em>, <strong>7</strong>,
+744–750.
 </div>
 <div id="ref-Roberts2001" class="csl-entry">
-Roberts, G.O. &amp; Rosenthal, J.S. (2001) Optimal scaling for various <span>Metropolis</span>-<span>Hastings</span> algorithms. <em>Statistical Science</em>, <strong>16</strong>, 351–367.
+Roberts, G.O. &amp; Rosenthal, J.S. (2001) <a href="https://doi.org/10.1214/ss/1015346320">Optimal scaling for various
+<span>Metropolis</span>-<span>Hastings</span> algorithms</a>.
+<em>Statistical Science</em>, <strong>16</strong>, 351–367.
 </div>
 <div id="ref-Rosenthal2009" class="csl-entry">
-Rosenthal, S. (2009) Optimal <span>Proposal</span> <span>Distributions</span> and <span>Adaptive</span> <span>MCMC</span>. <em>Handbook of Markov Chain Monte Carlo</em>.
+Rosenthal, S. (2009) Optimal <span>Proposal</span>
+<span>Distributions</span> and <span>Adaptive</span> <span>MCMC</span>.
+<em>Handbook of Markov Chain Monte Carlo</em>.
 </div>
 </div>
 </div>

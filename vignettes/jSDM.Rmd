@@ -1,11 +1,11 @@
 ---
 title: "Get started with jSDM"
 output:
-  bookdown::html_document2:
+  #bookdown::html_document2:
     base_format: rmarkdown::html_vignette
     number_sections: true
     toc: true
-    #toc_float: true
+    toc_float: true
     fig_caption: yes
 link-citations: yes
 bibliography: bib/biblio-jSDM.bib
@@ -40,7 +40,7 @@ The Gibbs sampler is written in C++. It uses Rcpp, Armadillo and GSL to maximize
 |Package: |jSDM |
 |:------|:-----|
 | Type: |Package|
-|Version: |0.1.1|
+|Version: |0.2.1|
 |Date: |2019-01-11|
 |License:|GPL-3|
 |LazyLoad:|yes| 
@@ -54,6 +54,7 @@ The package includes the following functions to fit various species distribution
 | `jSDM_binomial_probit_sp_constrained()` | presence-absence | wide |
 | `jSDM_binomial_probit_long_format()` | presence-absence | long |
 | `jSDM_poisson_log()` | abundance | wide |
+| `jSDM_gaussian()` | continuous | wide |
 
 * `jSDM_binomial_probit()` : 
 
@@ -128,6 +129,21 @@ The package includes the following functions to fit various species distribution
   | if `n_latent=0` and `site_effect="fixed"` | probit$(\theta_n) = D_n \gamma + X_n \beta_j + \alpha_i$ |
   | if `n_latent>0` and `site_effect="random"` | probit$(\theta_n) = D_n \gamma + X_n \beta_j + W_i \lambda_j + \alpha_i$ and $\alpha_i \sim \mathcal{N}(0,V_\alpha)$ |
 
+* `jSDM_gaussian()` : 
+
+  **Ecological process:**
+
+  $$y_{ij} \sim \mathcal{N}(\theta_{ij}, V),$$ 
+  where
+
+  | conditions                                   | model specification                              |
+  |:---------------------------------------------|:-------------------------------------------------|
+  | if `n_latent=0` and `site_effect="none"` | $\theta_{ij} = \beta_{0j} + X_i \beta_j$ |
+  | if `n_latent>0` and `site_effect="none"` | $\theta_{ij} = \beta_{0j} + X_i \beta_j + W_i \lambda_j$ |
+  | if `n_latent=0` and `site_effect="random"` | $\theta_{ij} = \beta_{0j} + X_i \beta_j  + \alpha_i$ and   $\alpha_i \sim \mathcal{N}(0,V_\alpha)$ |
+  | if `n_latent>0` and `site_effect="fixed"` | $\theta_{ij} = \beta_{0j} + X_i \beta_j + W_i \lambda_j + \alpha_i$ |
+  | if `n_latent=0` and `site_effect="fixed"` | $\theta_{ij} = \beta_{0j} + X_i \beta_j  + \alpha_i$ |
+  | if `n_latent>0` and `site_effect="random"` | $\theta_{ij} = \beta_{0j} + X_i \beta_j + W_i \lambda_j + \alpha_i$ and $\alpha_i \sim \mathcal{N}(0,V_\alpha)$ |
 Joint Species distribution models (jSDM) are useful tools to explain or predict species range and abundance from various environmental factors and species correlations [@Warton2015]. jSDM is becoming an increasingly popular statistical method in conservation biology. 
 
 In this vignette, we illustrate the use of the `jSDM` R package which aims at providing user-friendly statistical functions using field observations (occurrence or abundance data) to fit jSDMs models.
@@ -241,7 +257,8 @@ mod_frogs_jSDM_probit <- jSDM_binomial_probit(
   lambda_start=0, W_start=0,
   V_alpha=1, 
   # Priors
-  shape=0.1, rate=0.1,
+  shape_Valpha=0.1,
+  rate_Valpha=0.1,
   mu_beta=0, V_beta=1,
   mu_lambda=0, V_lambda=1,
   # Various 
@@ -316,11 +333,8 @@ Overall, the traces and the densities of the parameters indicate the convergence
 
 ## Matrice of correlations 
 
-After fitting the jSDM with latent variables, the **full species residual correlation matrix** $R=(R_{ij})^{i=1,\ldots, nspecies}_{j=1,\ldots, nspecies}$ can be derived from the covariance in the latent variables such as : 
-$$\Sigma_{ij} = \begin{cases}
-\lambda_i .\lambda_j^T & \text{ if } i \neq j \\
-\lambda_i .\lambda_j^T + 1 & \text{ if } i=j
-\end{cases}$$, then we compute correlations from covariances :
+After fitting the jSDM with latent variables, the **full species residual correlation matrix** $R=(R_{ij})^{i=1,\ldots, n_{species}}_{j=1,\ldots, n_{species}}$ can be derived from the covariance in the latent variables such as : 
+$$\Sigma_{ij} = \lambda_i^T .\lambda_j $$, then we compute correlations from covariances :
 $$R_{i,j} = \frac{\Sigma_{ij}}{\sqrt{\Sigma _{ii}\Sigma _{jj}}}$$.
 
 We use the function `plot_residual_cor()` to compute and display the residual correlation matrix between species :

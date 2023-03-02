@@ -60,6 +60,7 @@ Rcpp::List Rcpp_jSDM_binomial_probit_traits_lv(const int ngibbs,const int nthin,
   const int NSP = Y.n_cols;
   const int NL = W_start.n_cols; 
   const int NT = Tr.n_cols;
+  
   ///////////////////////////////////////////
   // Declaring new objects to store results //
   /* Parameters */
@@ -77,9 +78,11 @@ Rcpp::List Rcpp_jSDM_binomial_probit_traits_lv(const int ngibbs,const int nthin,
   /////////////////////////////////////
   // Initializing running parameters //
   
-  //  mat of species effects parameters and coefficients for latent variables (nl+np,nsp)
+  //  mat of species effects parameters 
   arma::mat beta_run = beta_start;
+  // factor loadings coefficients for latent variables 
   arma::mat lambda_run = lambda_start;
+  // coefficients for species traits and environment interaction
   arma::mat gamma_run=gamma_start;
   arma::mat mu_beta_run = Tr*gamma_run;
   // w latent variables (nsite*nl)

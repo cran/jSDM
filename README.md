@@ -8,12 +8,14 @@
 Status](https://www.r-pkg.org/badges/version/jSDM)](https://cran.r-project.org/package=jSDM)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3253460.svg)](https://doi.org/10.5281/zenodo.3253460)
 [![Downloads](https://cranlogs.r-pkg.org/badges/jSDM)](https://cran.r-project.org/package=jSDM)
+[![Codecov test
+coverage](https://codecov.io/gh/ghislainv/jSDM/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ghislainv/jSDM?branch=master)
 
 Package for fitting joint species distribution models (JSDM) in a
 hierarchical Bayesian framework ([Warton *et al.*
 2015](#ref-Warton2015)). The Gibbs sampler is written in C++. It uses
 [Rcpp](https://cran.r-project.org/package=Rcpp),
-[Armadillo](http://arma.sourceforge.net/docs.html) and
+[Armadillo](https://arma.sourceforge.net/docs.html) and
 [GSL](https://www.gnu.org/software/gsl/) to maximize computation
 efficiency.
 
@@ -59,6 +61,7 @@ distribution models :
 | `jSDM_binomial_probit_sp_constrained()` | presence-absence |    wide     |
 | `jSDM_binomial_probit_long_format()`    | presence-absence |    long     |
 | `jSDM_poisson_log()`                    | abundance        |    wide     |
+| `jSDM_gaussian()`                       | continuous       |    wide     |
 
 ## Contributing
 
@@ -77,8 +80,9 @@ Conduct](https://ecology.ghislainv.fr/jSDM/articles/Code_of_conduct.html).
 <div id="ref-Warton2015" class="csl-entry">
 
 Warton, D.I., Blanchet, F.G., O’Hara, R.B., Ovaskainen, O., Taskinen,
-S., Walker, S.C. & Hui, F.K.C. (2015) So many variables: Joint modeling
-in community ecology. *Trends in Ecology & Evolution*, **30**, 766–779.
+S., Walker, S.C. & Hui, F.K.C. (2015) [So many variables: Joint modeling
+in community ecology](https://doi.org/10.1016/j.tree.2015.09.007).
+*Trends in Ecology & Evolution*, **30**, 766–779.
 
 </div>
 
