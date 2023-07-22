@@ -266,9 +266,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="model-definition" class="section level2">
 <h2>Model definition</h2>
 <p>According to the article <span class="citation">Albert &amp;
-Siddhartha (<a href="#ref-Albert1993" role="doc-biblioref">1993</a>)</span>, a possible model is to assume the
-existence of an underlying latent variable related to our observed
-binary variable using the following proposition :</p>
+Siddhartha (<a href="#ref-Albert1993">1993</a>)</span>, a possible model
+is to assume the existence of an underlying latent variable related to
+our observed binary variable using the following proposition :</p>
 <ul>
 <li>Proposition</li>
 </ul>
@@ -799,9 +799,8 @@ $l=1,\ldots,q$.
 }
 \end{aligned}\]</span></p>
 <p>The algorithm implemented in <code>jSDM_binomial_logit()</code> on
-the basis of <span class="citation">Rosenthal (<a href="#ref-Rosenthal2009" role="doc-biblioref">2009</a>)</span> and
-<span class="citation">Roberts &amp; Rosenthal (<a href="#ref-Roberts2001" role="doc-biblioref">2001</a>)</span> articles,
-to estimate the parameters of the logit model is the following :</p>
+the basis of <span class="citation">Rosenthal (<a href="#ref-Rosenthal2009">2009</a>)</span> and <span class="citation">Roberts &amp; Rosenthal (<a href="#ref-Roberts2001">2001</a>)</span> articles, to estimate the
+parameters of the logit model is the following :</p>
 <ul>
 <li><p>Definition of constants <span class="math inline">\(N_{Gibbs}\)</span>, <span class="math inline">\(N_{burn}\)</span>, <span class="math inline">\(N_{thin}\)</span> and <span class="math inline">\(R_{opt}\)</span> such that <span class="math inline">\(N_{Gibbs}\)</span> corresponds to the number of
 iterations performed by the algorithm, <span class="math inline">\(N_{burn}\)</span> to the number of iterations
@@ -903,9 +902,9 @@ In the case of <span class="math inline">\(l&gt;j\)</span>, we put <span class="
 <h1>Poisson distribution with log link function</h1>
 <div id="model-definition-2" class="section level2">
 <h2>Model definition</h2>
-<p>According to the article <span class="citation">Hui (<a href="#ref-Hui2016" role="doc-biblioref">2016</a>)</span>, we can use
-the Poisson distribution for the analysis of multivariate abundance
-data, with estimation performed using Bayesian Markov chain Monte Carlo
+<p>According to the article <span class="citation">Hui (<a href="#ref-Hui2016">2016</a>)</span>, we can use the Poisson
+distribution for the analysis of multivariate abundance data, with
+estimation performed using Bayesian Markov chain Monte Carlo
 methods.</p>
 <p>In this case, it is assumed that <span class="math display">\[y_{ij}
 \sim \mathcal{P}oisson(\theta_{ij})\]</span>, with <span class="math inline">\(\mathrm{log}(\theta_{ij}) = \alpha_i + X_i\beta_j+

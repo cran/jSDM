@@ -119,7 +119,7 @@ The \code{mcmc.} objects can be summarized by functions provided by the \code{co
 }
 \description{
 The \code{jSDM_binomial_probit_long_format} function performs a Binomial probit regression in a Bayesian framework. 
-The function calls a Gibbs sampler written in C++ code which uses conjugate priors to estimate the conditional posterior distribution of model's parameters.
+The function calls a Gibbs sampler written in 'C++' code which uses conjugate priors to estimate the conditional posterior distribution of model's parameters.
 }
 \details{
 We model an ecological process where the presence or absence of species \eqn{j} on site \eqn{i} is explained by habitat suitability.
@@ -244,7 +244,7 @@ mod<-jSDM_binomial_probit_long_format( # Iteration
   seed=1234, verbose=1)
 
 #= Parameter estimates
-
+oldpar <- par(no.readonly = TRUE) 
 # gamma 
 par(mfrow=c(2,2))
 for(d in 1:nd){
@@ -254,7 +254,6 @@ for(d in 1:nd){
  abline(v=gamma.target[d],col='red')
 }
 ## beta_j
-# summary(mod$mcmc.sp$sp_1[,1:ncol(X)])
 mean_beta <- matrix(0,nsp,ncol(X))
 pdf(file=file.path(tempdir(), "Posteriors_beta_jSDM_probit.pdf"))
 par(mfrow=c(ncol(X),2))
@@ -271,8 +270,6 @@ for (j in 1:nsp) {
 dev.off()
 
 ## lambda_j
-# summary(mod$mcmc.sp$sp_1[,(ncol(X)+1):(ncol(X)+n_latent)])
-# summary(mod$mcmc.sp$sp_2[,(ncol(X)+1):(ncol(X)+n_latent)])
 mean_lambda <- matrix(0,nsp,n_latent)
 pdf(file=file.path(tempdir(), "Posteriors_lambda_jSDM_probit.pdf"))
 par(mfrow=c(n_latent*2,2))
@@ -310,7 +307,6 @@ for (l in 1:n_latent) {
 }
 
 ## alpha
-# summary(mod$mcmc.alpha)
 par(mfrow=c(1,3))
 plot(alpha.target, summary(mod$mcmc.alpha)[[1]][,"Mean"],
      xlab ="obs", ylab ="fitted", main="site effect alpha")
@@ -321,29 +317,28 @@ coda::densplot(mod$mcmc.V_alpha,main="Density V_alpha")
 abline(v=V_alpha.target,col='red')
 
 ## Deviance
-#summary(mod$mcmc.Deviance)
+summary(mod$mcmc.Deviance)
 plot(mod$mcmc.Deviance)
 
 #= Predictions
 
 ## probit_theta
-# summary(mod$probit_theta_latent)
 par(mfrow=c(1,2))
 plot(probit_theta[-1],mod$probit_theta_latent,
      main="probit(theta)",xlab="obs",ylab="fitted")
 abline(a=0,b=1,col='red')
 
 ## Z
-# summary(mod$Z_latent)
 plot(Z_true[-1],mod$Z_latent,
      main="Z_latent", xlab="obs", ylab="fitted")
 abline(a=0,b=1,col='red')
+
 ## theta
-# summary(mod$theta_latent)
 par(mfrow=c(1,1))
 plot(pnorm(probit_theta[-1]),mod$theta_latent,
      main="theta",xlab="obs",ylab="fitted")
 abline(a=0,b=1,col='red')
+par(oldpar)
 
 }
 \references{

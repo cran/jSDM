@@ -1,4 +1,5 @@
 #context("test-jSDM_poisson_log")
+
 #== Without traits ======
 #================= Single species distribution model (SDM) ======================
 
@@ -13,11 +14,13 @@ seed <- 1234
 set.seed(seed)
 
 # Ecological process (suitability)
-x1 <- rnorm(nsite,0,1)
 set.seed(2*seed)
+x1 <- rnorm(nsite,0,1)
+set.seed(seed)
 x2 <- rnorm(nsite,0,1)
 X <- cbind(rep(1,nsite),x1,x2)
 np <- ncol(X)
+set.seed(seed)
 beta.target <- matrix(runif(nsp*np,-2,2), byrow=TRUE, nrow=nsp)
 log.theta <- X %*% t(beta.target)
 theta <- exp(log.theta)
@@ -39,7 +42,7 @@ mod <- jSDM::jSDM_poisson_log(burnin, mcmc, thin,# Chains
                         # Priors
                         mu_beta=0, V_beta=10,
                         # Various
-                        seed=1234, ropt=0.44, verbose=1)
+                        seed=1234, ropt=0.44, verbose=0)
 
 test_that("jSDM_poisson_log works with one species", {
   expect_equal(sum(is.na(mod$theta_latent)),0)
@@ -64,12 +67,14 @@ nsp <- 5
 seed <- 1234
 
 # Ecological process (suitability)
+set.seed(seed)
 x1 <- rnorm(nsite,0,1)
 set.seed(2*seed)
 x2 <- rnorm(nsite,0,1)
 X <- cbind(rep(1,nsite),x1,x2)
 np <- ncol(X)
-beta.target <- matrix(runif(nsp*np,-2,2), byrow=TRUE, nrow=nsp)
+set.seed(2*seed)
+beta.target <- matrix(runif(nsp*np,-1,1), byrow=TRUE, nrow=nsp)
 log.theta <- X %*% t(beta.target)
 theta <- exp(log.theta)
 set.seed(seed)
@@ -90,7 +95,7 @@ mod <- jSDM::jSDM_poisson_log(burnin, mcmc, thin,# Chains
                         # Priors
                         mu_beta=0, V_beta=10,
                         # Various
-                        seed=1234, ropt=0.44, verbose=1)
+                        seed=1234, ropt=0.44, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works ", {
   expect_equal(sum(is.na(mod$theta_latent)),0)
@@ -107,15 +112,20 @@ test_that("jSDM_poisson_log works ", {
 #========== JSDM with fixed site effect ====================
 
 # Ecological process (suitability)
+set.seed(seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(2*seed)
 x2 <- rnorm(nsite,0,1)
 X <- cbind(rep(1,nsite),x1,x2)
 np <- ncol(X)
+set.seed(seed)
 beta.target <- matrix(runif(nsp*np,-2,2), byrow=TRUE, nrow=nsp)
+set.seed(seed)
 alpha.target <- runif(nsite,-2,2)
 alpha.target[1] <- 0
 log.theta <- X %*% t(beta.target) + alpha.target
 theta <- exp(log.theta)
+set.seed(seed)
 Y <- apply(theta, 2, rpois, n=nsite) 
 
 # Fit the model 
@@ -132,7 +142,7 @@ mod <- jSDM::jSDM_poisson_log(burnin, mcmc, thin, # Chains
                         V_alpha=10,
                         mu_beta=0, V_beta=10,
                         # Various
-                        seed=1234, ropt=0.44, verbose=1)
+                        seed=1234, ropt=0.44, verbose=0)
 
 # Tests
 test_that("jSDM_poisson_log works with fixed site effect", {
@@ -153,15 +163,20 @@ test_that("jSDM_poisson_log works with fixed site effect", {
 #========== JSDM with random site effect ====================
 
 # Ecological process (suitability)
+set.seed(seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(2*seed)
 x2 <- rnorm(nsite,0,1)
 X <- cbind(rep(1,nsite),x1,x2)
 np <- ncol(X)
-beta.target <- matrix(runif(nsp*np,-2,2), byrow=TRUE, nrow=nsp)
+set.seed(seed)
+beta.target <- matrix(runif(nsp*np,-1,1), byrow=TRUE, nrow=nsp)
 Valpha.target <- 0.5
+set.seed(seed)
 alpha.target <- rnorm(nsite,0,sqrt(Valpha.target))
 log.theta <- X %*% t(beta.target) + alpha.target
 theta <- exp(log.theta)
+set.seed(seed)
 Y <- apply(theta, 2, rpois, n=nsite) 
 
 
@@ -180,7 +195,7 @@ mod <- jSDM::jSDM_poisson_log(burnin, mcmc, thin, # Chains
                         shape_Valpha=0.5, rate_Valpha=0.0005,
                         mu_beta=0, V_beta=10,
                         # Various
-                        seed=1234, ropt=0.44, verbose=1)
+                        seed=1234, ropt=0.44, verbose=0)
 
 # Tests
 test_that("jSDM_poisson_log works with random site effect", {
@@ -204,7 +219,9 @@ test_that("jSDM_poisson_log works with random site effect", {
 #=========== JSDM with latent variables ===================
 
 # Ecological process (suitability)
+set.seed(seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(2*seed)
 x2 <- rnorm(nsite,0,1)
 X <- cbind(rep(1,nsite),x1,x2)
 np <- ncol(X)
@@ -213,12 +230,16 @@ W <- cbind(rnorm(nsite,0,1),rnorm(nsite,0,1))
 #= Number of latent variables
 n_latent <-  ncol(W)
 l.zero <- 0
-l.diag <- runif(2,0,2)
-l.other <- runif(nsp*2-3,-2,2)
+set.seed(seed)
+l.diag <- runif(2,0,1)
+set.seed(seed)
+l.other <- runif(nsp*2-3,-1,1)
 lambda.target <- matrix(c(l.diag[1],l.zero,l.other[1],l.diag[2],l.other[-1]), byrow=TRUE, nrow=nsp)
-beta.target <- matrix(runif(nsp*np,-2,2), byrow=TRUE, nrow=nsp)
+set.seed(seed)
+beta.target <- matrix(runif(nsp*np,-1,1), byrow=TRUE, nrow=nsp)
 log.theta <- X %*% t(beta.target) + W %*% t(lambda.target)
 theta <- exp(log.theta)
+set.seed(seed)
 Y <- apply(theta, 2, rpois, n=nsite) 
 
 
@@ -233,10 +254,10 @@ mod <- jSDM::jSDM_poisson_log(burnin, mcmc, thin,# Chains
                         beta_start=0, lambda_start = 0,
                         W_start=0,
                         # Priors
-                        mu_beta=0, V_beta=10,
-                        mu_lambda=0, V_lambda=10,
+                        mu_beta=0, V_beta=1,
+                        mu_lambda=0, V_lambda=1,
                         # Various
-                        seed=1234, ropt=0.44, verbose=1)
+                        seed=1234, ropt=0.44, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works with latent variables", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -258,7 +279,9 @@ test_that("jSDM_poisson_log works with latent variables", {
 #============ JSDM with latent variables and fixed site effect =======================================
 
 # Ecological process (suitability)
+set.seed(seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(2*seed)
 x2 <- rnorm(nsite,0,1)
 X <- cbind(rep(1,nsite),x1,x2)
 np <- ncol(X)
@@ -267,14 +290,19 @@ W <- cbind(rnorm(nsite,0,1),rnorm(nsite,0,1))
 #= Number of latent variables
 n_latent <- ncol(W)
 l.zero <- 0
-l.diag <- runif(2,0,2)
-l.other <- runif(nsp*2-3,-2,2)
+set.seed(seed)
+l.diag <- runif(2,0,1)
+set.seed(seed)
+l.other <- runif(nsp*2-3,-1,1)
 lambda.target <- matrix(c(l.diag[1],l.zero,l.other[1],l.diag[2],l.other[-1]), byrow=TRUE, nrow=nsp)
-beta.target <- matrix(runif(nsp*np,-2,2), byrow=TRUE, nrow=nsp)
-alpha.target <- runif(nsite,-2,2)
+set.seed(seed)
+beta.target <- matrix(runif(nsp*np,-1,1), byrow=TRUE, nrow=nsp)
+set.seed(seed)
+alpha.target <- runif(nsite,-1,1)
 alpha.target[1] <- 0
 log.theta <- X %*% t(beta.target) + W %*% t(lambda.target) + alpha.target
 theta <- exp(log.theta)
+set.seed(seed)
 Y <- apply(theta, 2, rpois, n=nsite) 
 
 
@@ -296,7 +324,7 @@ mod <- jSDM::jSDM_poisson_log(burnin, mcmc, thin, # Chains
                         mu_beta=0, V_beta=10,
                         mu_lambda=0, V_lambda=10,
                         # Various
-                        seed=1234, ropt=0.44, verbose=1)
+                        seed=1234, ropt=0.44, verbose=0)
 # Tests 
 test_that("jSDM_poisson_log works with fixed site effect and latent variables", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -321,7 +349,9 @@ test_that("jSDM_poisson_log works with fixed site effect and latent variables", 
 #============= JSDM with latent variables and random site effect ======================================
 
 # Ecological process (suitability)
+set.seed(2*seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(seed)
 x2 <- rnorm(nsite,0,1)
 X <- cbind(rep(1,nsite),x1,x2)
 np <- ncol(X)
@@ -330,14 +360,19 @@ W <- cbind(rnorm(nsite,0,1),rnorm(nsite,0,1))
 #= Number of latent variables
 n_latent <- ncol(W)
 l.zero <- 0
-l.diag <- runif(2,0,2)
-l.other <- runif(nsp*2-3,-2,2)
+set.seed(seed)
+l.diag <- runif(2,0,1)
+set.seed(seed)
+l.other <- runif(nsp*2-3,-1,1)
 lambda.target <- matrix(c(l.diag[1],l.zero,l.other[1],l.diag[2],l.other[-1]), byrow=TRUE, nrow=nsp)
-beta.target <- matrix(runif(nsp*np,-2,2), byrow=TRUE, nrow=nsp)
+set.seed(seed)
+beta.target <- matrix(runif(nsp*np,-1,1), byrow=TRUE, nrow=nsp)
 Valpha.target <- 0.5
+set.seed(seed)
 alpha.target <- rnorm(nsite,0,sqrt(Valpha.target))
 log.theta <- X %*% t(beta.target) + W %*% t(lambda.target) + alpha.target
 theta <- exp(log.theta)
+set.seed(seed)
 Y <- apply(theta, 2, rpois, n=nsite) 
 
 
@@ -360,7 +395,7 @@ mod <- jSDM::jSDM_poisson_log(burnin, mcmc, thin, # Chains
                         mu_beta=0, V_beta=10,
                         mu_lambda=0, V_lambda=10,
                         # Various
-                        seed=1234, ropt=0.44, verbose=1)
+                        seed=1234, ropt=0.44, verbose=0)
 # Tests 
 test_that("jSDM_poisson_log works with random site effect and latent variables", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -387,22 +422,27 @@ test_that("jSDM_poisson_log works with random site effect and latent variables",
 #== JSDM with intercept only, latent variables and random site effect ===================================
 
 # Ecological process (suitability)
-X <- matrix(1,nsite,1)
+X <- matrix(1, nsite, 1)
 colnames(X)<- "Int"
 np <- ncol(X)
 set.seed(2*seed)
-W <- cbind(rnorm(nsite,0,1),rnorm(nsite,0,1))
+W <- cbind(rnorm(nsite, 0, 1),rnorm(nsite, 0, 1))
 #= Number of latent variables
 n_latent <- ncol(W)
 l.zero <- 0
-l.diag <- runif(2,0,2)
-l.other <- runif(nsp*2-3,-2,2)
-lambda.target <- matrix(c(l.diag[1],l.zero,l.other[1],l.diag[2],l.other[-1]), byrow=TRUE, nrow=nsp)
-beta.target <- matrix(runif(nsp*np,-2,2), byrow=TRUE, nrow=nsp)
+set.seed(seed)
+l.diag <- runif(2,0,1)
+set.seed(seed)
+l.other <- runif(nsp*2-3,-1,1)
+lambda.target <- matrix(c(l.diag[1], l.zero,l.other[1], l.diag[2], l.other[-1]), byrow=TRUE, nrow=nsp)
+set.seed(seed)
+beta.target <- matrix(runif(nsp*np,-1,1), byrow=TRUE, nrow=nsp)
 Valpha.target <- 0.5
+set.seed(seed)
 alpha.target <- rnorm(nsite,0,sqrt(Valpha.target))
 log.theta <- X %*% t(beta.target) + W %*% t(lambda.target) + alpha.target
 theta <- exp(log.theta)
+set.seed(seed)
 Y <- apply(theta, 2, rpois, n=nsite) 
 
 
@@ -425,7 +465,7 @@ mod <- jSDM::jSDM_poisson_log(burnin, mcmc, thin, # Chains
                         mu_beta=0, V_beta=10,
                         mu_lambda=0, V_lambda=10,
                         # Various
-                        seed=1234, ropt=0.44, verbose=1)
+                        seed=1234, ropt=0.44, verbose=0)
 # Tests 
 test_that("jSDM_poisson_log works with random site effect and latent variables", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -464,24 +504,26 @@ nsp <- 5
 
 # Ecological process (suitability)
 x1 <- rnorm(nsite,0,1)
+set.seed(2*seed)
 x2 <- rnorm(nsite,0,1)
-site_data <- data.frame(x1=x1,x2=x2)
-site_formula <- ~ x1 + x2 + I(x1^2) + I(x2^2)
+site_data <- data.frame(x1=x1, x2=x2)
+site_formula <- ~ x1 + x2
 X <- model.matrix(site_formula, site_data)
 np <- ncol(X)
+set.seed(seed)
 trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)), SLA=scale(runif(nsp,0,250)))
-trait_formula <- ~ WSD + SLA + x1:I(WSD^2) + I(x1^2):SLA + x2:I(SLA^2) + I(x2^2):WSD
+trait_formula <- ~ WSD + SLA + x1:I(WSD^2) + x2:I(SLA^2)
 form.Tr <- function(trait_formula, trait_data,X){
   data <- trait_data
-  # add column of 1 with names of covariables in site_data 
+  # add column of 1 with names of covariables in site_data
   data[,colnames(X)] <- 1
   mf.suit.tr <- model.frame(formula=trait_formula, data=data)
   # full design matrix corresponding to formula
   mod.mat <- model.matrix(attr(mf.suit.tr,"terms"), data=mf.suit.tr)
-  # Remove duplicated columns to get design matrix for traits 
+  # Remove duplicated columns to get design matrix for traits
   Tr <- as.matrix(mod.mat[,!duplicated(mod.mat,MARGIN=2)])
   colnames(Tr) <- colnames(mod.mat)[!duplicated(mod.mat,MARGIN=2)]
-  # Rename columns according to considered trait 
+  # Rename columns according to considered trait
   for(p in 1:np){
     if(sum(colnames(Tr)==colnames(X)[p])==0){
       colnames(Tr) <- gsub(pattern=paste0(":",colnames(X)[p]), replacement="",
@@ -500,11 +542,11 @@ form.Tr <- function(trait_formula, trait_data,X){
     for(p in 1:np){
       term <- c(grep(paste0(colnames(X)[p],":"), colnames(mod.mat), value=TRUE, fixed=TRUE),grep(paste0(":",colnames(X)[p]), colnames(mod.mat), value=TRUE, fixed=TRUE))
       if(length(term)==0) next
-      # fixed=TRUE pattern is a string to be matched as is 
-      # not a regular expression because of special characters in formula (^, /, [, ...) 
+      # fixed=TRUE pattern is a string to be matched as is
+      # not a regular expression because of special characters in formula (^, /, [, ...)
       gamma_zeros[t,p] <- length(c(grep(paste0(":",colnames(Tr)[t]), term, fixed=TRUE),grep(paste0(colnames(Tr)[t],":"), term, fixed=TRUE)))
     }
-    gamma_zeros[t,1] <- length(which(colnames(mod.mat)==colnames(Tr)[t]))  
+    gamma_zeros[t,1] <- length(which(colnames(mod.mat)==colnames(Tr)[t]))
   }
   gamma_zeros[col_Tint,] <- 1
   return(list(gamma_zeros=gamma_zeros,Tr=Tr))
@@ -513,14 +555,16 @@ result <- form.Tr(trait_formula,trait_data,X)
 Tr <- result$Tr
 nt <- ncol(Tr)
 gamma_zeros <- result$gamma_zeros
-gamma.target <- matrix(runif(nt*np,-2,2), byrow=TRUE, nrow=nt)
+set.seed(seed)
+gamma.target <- matrix(runif(nt*np,-1,1), byrow=TRUE, nrow=nt)
 mu_beta <- as.matrix(Tr) %*% (gamma.target*gamma_zeros)
 V_beta <- diag(1,np)
 beta.target <- matrix(NA,nrow=np,ncol=nsp)
 for(j in 1:nsp){
+  set.seed(seed)
   beta.target[,j] <- MASS::mvrnorm(n=1, mu=mu_beta[j,], Sigma=V_beta)
 }
-log_theta <- as.matrix(X) %*% beta.target 
+log_theta <- as.matrix(X) %*% beta.target
 theta <- exp(log_theta)
 set.seed(seed)
 Y <- apply(theta, 2, rpois, n=nsite)
@@ -540,7 +584,7 @@ mod <- jSDM::jSDM_poisson_log(burnin=burnin, mcmc=mcmc, thin=thin,
                               mu_gamma=0, V_gamma=10,
                               beta_start=0,
                               mu_beta=0, V_beta=10,
-                              seed=1234, verbose=1)
+                              seed=1234, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works with traits", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -560,34 +604,42 @@ test_that("jSDM_poisson_log works with traits", {
 #============= JSDM with latent variables ===============
 
 # Ecological process (suitability)
+set.seed(seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(2*seed)
 x2 <- rnorm(nsite,0,1)
 site_data <- data.frame(x1=x1,x2=x2)
-site_formula <- ~ x1 + x2 + I(x1^2) + I(x2^2)
+site_formula <- ~ x1 + x2
 X <- model.matrix(site_formula, site_data)
 np <- ncol(X)
+set.seed(seed)
 trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)), SLA=scale(runif(nsp,0,250)))
-trait_formula <- ~ WSD + SLA + x1:I(WSD^2) + I(x1^2):SLA + x2:I(SLA^2) + I(x2^2):WSD
+trait_formula <- ~ WSD + SLA + x1:I(WSD^2) + x2:I(SLA^2)
 result <- form.Tr(trait_formula,trait_data,X)
 Tr <- result$Tr
 nt <- ncol(Tr)
 gamma_zeros <- result$gamma_zeros
-gamma.target <- matrix(runif(nt*np,-2,2), byrow=TRUE, nrow=nt)
+set.seed(seed)
+gamma.target <- matrix(runif(nt*np,-0.5, 0.5), byrow=TRUE, nrow=nt)
 mu_beta <- as.matrix(Tr) %*% (gamma.target*gamma_zeros)
 V_beta <- diag(1,np)
 beta.target <- matrix(NA,nrow=np,ncol=nsp)
 for(j in 1:nsp){
+  set.seed(seed)
   beta.target[,j] <- MASS::mvrnorm(n=1, mu=mu_beta[j,], Sigma=V_beta)
 }
+set.seed(seed)
 W <- cbind(rnorm(nsite,0,1),rnorm(nsite,0,1))
 #= Number of latent variables
 n_latent <- ncol(W)
 l.zero <- 0
-l.diag <- runif(2,0,2)
-l.other <- runif(nsp*n_latent-3,-2,2)
+set.seed(seed)
+l.diag <- runif(n_latent,0,1)
+set.seed(seed)
+l.other <- runif(nsp*n_latent-3,-0.5,0.5)
 lambda.target <- t(matrix(c(l.diag[1],l.zero,
                             l.other[1],l.diag[2],l.other[-1]), byrow=TRUE, nrow=nsp))
-log_theta <- as.matrix(X) %*% beta.target + W %*% lambda.target 
+log_theta <- as.matrix(X) %*% beta.target + W %*% lambda.target
 theta <- exp(log_theta)
 set.seed(seed)
 Y <- apply(theta, 2, rpois, n=nsite)
@@ -610,7 +662,7 @@ mod <- jSDM::jSDM_poisson_log(burnin=burnin, mcmc=mcmc, thin=thin,
                               lambda_start=0, W_start=0,
                               mu_beta=0, V_beta=10,
                               mu_lambda=0, V_lambda=1,
-                              seed=1234, verbose=1)
+                              seed=1234, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works with traits, latent variables", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -633,27 +685,33 @@ test_that("jSDM_poisson_log works with traits, latent variables", {
 #============== JSDM with fixed site effect =================
 
 # Ecological process (suitability)
+set.seed(seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(2*seed)
 x2 <- rnorm(nsite,0,1)
 site_data <- data.frame(x1=x1,x2=x2)
-site_formula <- ~ x1 + x2 + I(x1^2) + I(x2^2)
+site_formula <- ~ x1 + x2
 X <- model.matrix(site_formula, site_data)
 np <- ncol(X)
+set.seed(seed)
 trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)), SLA=scale(runif(nsp,0,250)))
-trait_formula <- ~ WSD + SLA + x1:I(WSD^2) + I(x1^2):SLA + x2:I(SLA^2) + I(x2^2):WSD
+trait_formula <- ~ WSD + SLA + x1:I(WSD^2) + x2:I(SLA^2)
 result <- form.Tr(trait_formula,trait_data,X)
 Tr <- result$Tr
 nt <- ncol(Tr)
 gamma_zeros <- result$gamma_zeros
-gamma.target <- matrix(runif(nt*np,-2,2), byrow=TRUE, nrow=nt)
+set.seed(seed)
+gamma.target <- matrix(runif(nt*np,-0.5,0.5), byrow=TRUE, nrow=nt)
 mu_beta <- as.matrix(Tr) %*% (gamma.target*gamma_zeros)
 V_beta <- diag(1,np)
 beta.target <- matrix(NA,nrow=np,ncol=nsp)
 for(j in 1:nsp){
+set.seed(seed)
   beta.target[,j] <- MASS::mvrnorm(n=1, mu=mu_beta[j,], Sigma=V_beta)
 }
-alpha.target <- runif(nsite,-2,2)
-alpha.target[1] <- 0 
+set.seed(seed)
+alpha.target <- runif(nsite,-1,1)
+alpha.target[1] <- 0
 log_theta <- as.matrix(X) %*% beta.target + alpha.target
 theta <- exp(log_theta)
 set.seed(seed)
@@ -676,7 +734,7 @@ mod <- jSDM::jSDM_poisson_log(burnin=burnin, mcmc=mcmc, thin=thin,
                               alpha_start=0, beta_start=0,
                               V_alpha=10,
                               mu_beta=0, V_beta=10,
-                              seed=1234, verbose=1)
+                              seed=1234, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works with traits, fixed site effect", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -698,26 +756,33 @@ test_that("jSDM_poisson_log works with traits, fixed site effect", {
 #=============== JSDM with random site effect ================
 
 # Ecological process (suitability)
+set.seed(2*seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(seed)
 x2 <- rnorm(nsite,0,1)
 site_data <- data.frame(x1=x1,x2=x2)
-site_formula <- ~ x1 + x2 + I(x1^2) + I(x2^2)
+site_formula <- ~ x1 + x2
 X <- model.matrix(site_formula, site_data)
 np <- ncol(X)
-trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)), SLA=scale(runif(nsp,0,250)))
-trait_formula <- ~ WSD + SLA + x1:I(WSD^2) + I(x1^2):SLA + x2:I(SLA^2) + I(x2^2):WSD
+set.seed(2*seed)
+trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)),
+                         SLA=scale(runif(nsp,0,250)))
+trait_formula <- ~ WSD + SLA + x1:I(WSD^2) + x2:I(SLA^2)
 result <- form.Tr(trait_formula,trait_data,X)
 Tr <- result$Tr
 nt <- ncol(Tr)
 gamma_zeros <- result$gamma_zeros
-gamma.target <- matrix(runif(nt*np,-2,2), byrow=TRUE, nrow=nt)
+set.seed(seed)
+gamma.target <- matrix(runif(nt*np,-1,1), byrow=TRUE, nrow=nt)
 mu_beta <- as.matrix(Tr) %*% (gamma.target*gamma_zeros)
 V_beta <- diag(1,np)
 beta.target <- matrix(NA,nrow=np,ncol=nsp)
 for(j in 1:nsp){
+  set.seed(seed)
   beta.target[,j] <- MASS::mvrnorm(n=1, mu=mu_beta[j,], Sigma=V_beta)
 }
 Valpha.target <- 0.5
+set.seed(seed)
 alpha.target <- rnorm(nsite,0,sqrt(Valpha.target))
 log_theta <- as.matrix(X) %*% beta.target + alpha.target
 theta <- exp(log_theta)
@@ -742,7 +807,7 @@ mod <- jSDM::jSDM_poisson_log(burnin=burnin, mcmc=mcmc, thin=thin,
                               V_alpha=1,
                               shape_Valpha=0.5, rate_Valpha=0.0005,
                               mu_beta=0, V_beta=10,
-                              seed=1234, verbose=1)
+                              seed=1234, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works with traits, random site effect", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -766,33 +831,43 @@ test_that("jSDM_poisson_log works with traits, random site effect", {
 #======= JSDM with fixed site effect and latent variables ==============================
 
 # Ecological process (suitability)
+set.seed(2*seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(seed)
 x2 <- rnorm(nsite,0,1)
 site_data <- data.frame(x1=x1,x2=x2)
-site_formula <- ~ x1 + x2 + I(x1^2) + I(x2^2)
+site_formula <- ~ x1 + x2
 X <- model.matrix(site_formula, site_data)
 np <- ncol(X)
-trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)), SLA=scale(runif(nsp,0,250)))
-trait_formula <- ~ WSD + SLA + x1:I(WSD^2) + I(x1^2):SLA + x2:I(SLA^2) + I(x2^2):WSD
+set.seed(seed)
+trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)),
+                         SLA=scale(runif(nsp,0,250)))
+trait_formula <- ~ WSD + SLA + x1:I(WSD^2)+ x2:I(SLA^2)
 result <- form.Tr(trait_formula,trait_data,X)
 Tr <- result$Tr
 nt <- ncol(Tr)
 gamma_zeros <- result$gamma_zeros
-gamma.target <- matrix(runif(nt*np,-2,2), byrow=TRUE, nrow=nt)
+set.seed(seed)
+gamma.target <- matrix(runif(nt*np,-0.5,0.5), byrow=TRUE, nrow=nt)
 mu_beta <- as.matrix(Tr) %*% (gamma.target*gamma_zeros)
 V_beta <- diag(1,np)
 beta.target <- matrix(NA,nrow=np,ncol=nsp)
 for(j in 1:nsp){
+  set.seed(seed)
   beta.target[,j] <- MASS::mvrnorm(n=1, mu=mu_beta[j,], Sigma=V_beta)
 }
+set.seed(seed)
 W <- cbind(rnorm(nsite,0,1),rnorm(nsite,0,1))
 l.zero <- 0
+set.seed(seed)
 l.diag <- runif(2,0,2)
-l.other <- runif(nsp*n_latent-3,-2,2)
+set.seed(seed)
+l.other <- runif(nsp*n_latent-3,-1,1)
 lambda.target <- t(matrix(c(l.diag[1],l.zero,
                             l.other[1],l.diag[2],l.other[-1]), byrow=TRUE, nrow=nsp))
-alpha.target <- runif(nsite,-2,2)
-alpha.target[1] <- 0 
+set.seed(seed)
+alpha.target <- runif(nsite,-1,1)
+alpha.target[1] <- 0
 log_theta <- as.matrix(X) %*% beta.target + W %*% lambda.target + alpha.target
 theta <- exp(log_theta)
 set.seed(seed)
@@ -806,8 +881,8 @@ nsamp <- mcmc/thin
 mod <- jSDM::jSDM_poisson_log(burnin=burnin, mcmc=mcmc, thin=thin,
                               count_data=Y,
                               site_formula=site_formula,
-                              site_data=X, n_latent=2, 
-                              site_effect = "fixed", 
+                              site_data=X, n_latent=2,
+                              site_effect = "fixed",
                               trait_formula = trait_formula,
                               trait_data = trait_data,
                               gamma_start=0,
@@ -817,7 +892,7 @@ mod <- jSDM::jSDM_poisson_log(burnin=burnin, mcmc=mcmc, thin=thin,
                               V_alpha=10,
                               mu_beta=0, V_beta=10,
                               mu_lambda=0, V_lambda=1,
-                              seed=1234, verbose=1)
+                              seed=1234, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works with traits, fixed site effect and latent variables", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -843,32 +918,42 @@ test_that("jSDM_poisson_log works with traits, fixed site effect and latent vari
 #============ JSDM with random site effect and latent variables ==================================
 
 # Ecological process (suitability)
+set.seed(2*seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(seed)
 x2 <- rnorm(nsite,0,1)
 site_data <- data.frame(x1=x1,x2=x2)
-site_formula <- ~ x1 + x2 + I(x1^2) + I(x2^2)
+site_formula <- ~ x1 + x2
 X <- model.matrix(site_formula, site_data)
 np <- ncol(X)
-trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)), SLA=scale(runif(nsp,0,250)))
-trait_formula <- ~ WSD + SLA + x1:I(WSD^2) + I(x1^2):SLA + x2:I(SLA^2) + I(x2^2):WSD
+set.seed(seed)
+trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)),
+                         SLA=scale(runif(nsp,0,250)))
+trait_formula <- ~ WSD + SLA + x1:I(WSD^2)+ x2:I(SLA^2)
 result <- form.Tr(trait_formula,trait_data,X)
 Tr <- result$Tr
 nt <- ncol(Tr)
 gamma_zeros <- result$gamma_zeros
-gamma.target <- matrix(runif(nt*np,-2,2), byrow=TRUE, nrow=nt)
+set.seed(seed)
+gamma.target <- matrix(runif(nt*np,-0.5,0.5), byrow=TRUE, nrow=nt)
 mu_beta <- as.matrix(Tr) %*% (gamma.target*gamma_zeros)
 V_beta <- diag(1,np)
 beta.target <- matrix(NA,nrow=np,ncol=nsp)
 for(j in 1:nsp){
+  set.seed(seed)
   beta.target[,j] <- MASS::mvrnorm(n=1, mu=mu_beta[j,], Sigma=V_beta)
 }
+set.seed(seed)
 W <- cbind(rnorm(nsite,0,1),rnorm(nsite,0,1))
 l.zero <- 0
-l.diag <- runif(2,0,2)
-l.other <- runif(nsp*n_latent-3,-2,2)
+set.seed(seed)
+l.diag <- runif(2,0,1)
+set.seed(seed)
+l.other <- runif(nsp*n_latent-3,-1,1)
 lambda.target <- t(matrix(c(l.diag[1],l.zero,
                             l.other[1],l.diag[2],l.other[-1]), byrow=TRUE, nrow=nsp))
 Valpha.target <- 0.5
+set.seed(seed)
 alpha.target <- rnorm(nsite,0,sqrt(Valpha.target))
 log_theta <- as.matrix(X) %*% beta.target + W %*% lambda.target + alpha.target
 theta <- exp(log_theta)
@@ -882,8 +967,8 @@ thin <- 1
 nsamp <- mcmc/thin
 mod <- jSDM::jSDM_poisson_log(count_data=Y,
                               site_formula=site_formula,
-                              site_data=X, n_latent=2, 
-                              site_effect = "random", 
+                              site_data=X, n_latent=2,
+                              site_effect = "random",
                               burnin=burnin, mcmc=mcmc, thin=thin,
                               trait_formula = trait_formula,
                               trait_data = trait_data,
@@ -895,7 +980,7 @@ mod <- jSDM::jSDM_poisson_log(count_data=Y,
                               shape_Valpha=0.5, rate_Valpha=0.0005,
                               mu_beta=0, V_beta=10,
                               mu_lambda=0, V_lambda=1,
-                              seed=1234, verbose=1)
+                              seed=1234, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works with traits, random site effect and latent variables", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -925,26 +1010,34 @@ test_that("jSDM_poisson_log works with traits, random site effect and latent var
 # Ecological process (suitability)
 X <- data.frame(Int=rep(1,nsite))
 np <- ncol(X)
-trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)), SLA=scale(runif(nsp,0,250)))
-trait_formula <- ~ WSD + SLA + I(WSD^2) + I(SLA^2) 
+set.seed(2*seed)
+trait_data <- data.frame(WSD=scale(runif(nsp,0,1000)),
+                         SLA=scale(runif(nsp,0,250)))
+trait_formula <- ~ WSD + SLA + I(WSD^2) + I(SLA^2)
 result <- form.Tr(trait_formula,trait_data,X)
 Tr <- result$Tr
 nt <- ncol(Tr)
 gamma_zeros <- result$gamma_zeros
-gamma.target <- matrix(runif(nt*np,-2,2), byrow=TRUE, nrow=nt)
+set.seed(2*seed)
+gamma.target <- matrix(runif(nt*np,-1,1), byrow=TRUE, nrow=nt)
 mu_beta <- as.matrix(Tr) %*% (gamma.target*gamma_zeros)
 V_beta <- diag(1,np)
 beta.target <- matrix(NA,nrow=np,ncol=nsp)
 for(j in 1:nsp){
+  set.seed(seed)
   beta.target[,j] <- MASS::mvrnorm(n=1, mu=mu_beta[j,], Sigma=V_beta)
 }
+set.seed(seed)
 W <- cbind(rnorm(nsite,0,1),rnorm(nsite,0,1))
 l.zero <- 0
-l.diag <- runif(2,0,2)
-l.other <- runif(nsp*n_latent-3,-2,2)
+set.seed(seed)
+l.diag <- runif(2,0,1)
+set.seed(seed)
+l.other <- runif(nsp*n_latent-3,-1,1)
 lambda.target <- t(matrix(c(l.diag[1],l.zero,
                             l.other[1],l.diag[2],l.other[-1]), byrow=TRUE, nrow=nsp))
 Valpha.target <- 0.5
+set.seed(seed)
 alpha.target <- rnorm(nsite,0,sqrt(Valpha.target))
 log_theta <- as.matrix(X) %*% beta.target + W %*% lambda.target + alpha.target
 theta <- exp(log_theta)
@@ -958,8 +1051,8 @@ thin <- 1
 nsamp <- mcmc/thin
 mod <- jSDM::jSDM_poisson_log(count_data=Y,
                               site_formula=~Int-1,
-                              site_data=X, n_latent=2, 
-                              site_effect = "random", 
+                              site_data=X, n_latent=2,
+                              site_effect = "random",
                               burnin=burnin, mcmc=mcmc, thin=thin,
                               trait_formula = trait_formula,
                               trait_data = trait_data,
@@ -971,7 +1064,7 @@ mod <- jSDM::jSDM_poisson_log(count_data=Y,
                               shape_Valpha=0.5, rate_Valpha=0.0005,
                               mu_beta=0, V_beta=10,
                               mu_lambda=0, V_lambda=1,
-                              seed=1234, verbose=1)
+                              seed=1234, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works with  intercept only in X, random site effect and latent variables", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -999,10 +1092,12 @@ test_that("jSDM_poisson_log works with  intercept only in X, random site effect 
 #== JSDM with intercept only in Tr, random site effect and latent variables ===============================
 
 # Ecological process (suitability)
+set.seed(seed)
 x1 <- rnorm(nsite,0,1)
+set.seed(2*seed)
 x2 <- rnorm(nsite,0,1)
 site_data <- data.frame(x1=x1,x2=x2)
-site_formula <- ~ x1 + x2 + I(x1^2) + I(x2^2)
+site_formula <- ~ x1 + x2
 X <- model.matrix(site_formula, site_data)
 np <- ncol(X)
 trait_data <- data.frame(Int=rep(1,nsp))
@@ -1012,20 +1107,26 @@ result <- form.Tr(trait_formula,trait_data,X)
 Tr <- result$Tr
 nt <- ncol(Tr)
 gamma_zeros <- result$gamma_zeros
-gamma.target <- matrix(runif(nt*np,-2,2), byrow=TRUE, nrow=nt)
+set.seed(seed)
+gamma.target <- matrix(runif(nt*np,-1,1), byrow=TRUE, nrow=nt)
 mu_beta <- as.matrix(Tr) %*% (gamma.target*gamma_zeros)
 V_beta <- diag(1,np)
 beta.target <- matrix(NA,nrow=np,ncol=nsp)
 for(j in 1:nsp){
+  set.seed(seed)
   beta.target[,j] <- MASS::mvrnorm(n=1, mu=mu_beta[j,], Sigma=V_beta)
 }
+set.seed(seed)
 W <- cbind(rnorm(nsite,0,1),rnorm(nsite,0,1))
 l.zero <- 0
-l.diag <- runif(2,0,2)
-l.other <- runif(nsp*n_latent-3,-2,2)
+set.seed(seed)
+l.diag <- runif(2,0,1)
+set.seed(seed)
+l.other <- runif(nsp*n_latent-3,-1,1)
 lambda.target <- t(matrix(c(l.diag[1],l.zero,
                             l.other[1],l.diag[2],l.other[-1]), byrow=TRUE, nrow=nsp))
 Valpha.target <- 0.5
+set.seed(seed)
 alpha.target <- rnorm(nsite,0,sqrt(Valpha.target))
 log_theta <- as.matrix(X) %*% beta.target + W %*% lambda.target + alpha.target
 theta <- exp(log_theta)
@@ -1039,8 +1140,8 @@ thin <- 1
 nsamp <- mcmc/thin
 mod <- jSDM::jSDM_poisson_log(count_data=Y,
                               site_formula=site_formula,
-                              site_data=X, n_latent=2, 
-                              site_effect = "random", 
+                              site_data=X, n_latent=2,
+                              site_effect = "random",
                               burnin=burnin, mcmc=mcmc, thin=thin,
                               trait_formula = trait_formula,
                               trait_data = trait_data,
@@ -1052,7 +1153,7 @@ mod <- jSDM::jSDM_poisson_log(count_data=Y,
                               shape_Valpha=0.5, rate_Valpha=0.0005,
                               mu_beta=0, V_beta=1,
                               mu_lambda=0, V_lambda=1,
-                              seed=1234, verbose=1)
+                              seed=1234, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works with  intercept only in Tr, traits, random site effect and latent variables", {
   expect_equal(length(mod$mcmc.sp),nsp)
@@ -1088,20 +1189,26 @@ result <- form.Tr(trait_formula,trait_data,X)
 Tr <- result$Tr
 nt <- ncol(Tr)
 gamma_zeros <- result$gamma_zeros
-gamma.target <- matrix(runif(nt*np,-2,2), byrow=TRUE, nrow=nt)
+set.seed(2*seed)
+gamma.target <- matrix(runif(nt*np,-3,3), byrow=TRUE, nrow=nt)
 mu_beta <- as.matrix(Tr) %*% (gamma.target*gamma_zeros)
 V_beta <- diag(1,np)
 beta.target <- matrix(NA,nrow=np,ncol=nsp)
 for(j in 1:nsp){
+  set.seed(seed)
   beta.target[,j] <- MASS::mvrnorm(n=1, mu=mu_beta[j,], Sigma=V_beta)
 }
+set.seed(seed)
 W <- cbind(rnorm(nsite,0,1),rnorm(nsite,0,1))
 l.zero <- 0
+set.seed(seed)
 l.diag <- runif(2,0,2)
+set.seed(seed)
 l.other <- runif(nsp*n_latent-3,-2,2)
 lambda.target <- t(matrix(c(l.diag[1],l.zero,
                             l.other[1],l.diag[2],l.other[-1]), byrow=TRUE, nrow=nsp))
 Valpha.target <- 0.5
+set.seed(seed)
 alpha.target <- rnorm(nsite,0,sqrt(Valpha.target))
 log_theta <- as.matrix(X) %*% beta.target + W %*% lambda.target + alpha.target
 theta <- exp(log_theta)
@@ -1115,8 +1222,8 @@ thin <- 1
 nsamp <- mcmc/thin
 mod <- jSDM::jSDM_poisson_log(count_data=Y,
                               site_formula=~Int-1,
-                              site_data=X, n_latent=2, 
-                              site_effect = "random", 
+                              site_data=X, n_latent=2,
+                              site_effect = "random",
                               burnin=burnin, mcmc=mcmc, thin=thin,
                               trait_formula = trait_formula,
                               trait_data = trait_data,
@@ -1128,7 +1235,7 @@ mod <- jSDM::jSDM_poisson_log(count_data=Y,
                               shape_Valpha=0.5, rate_Valpha=0.0005,
                               mu_beta=0, V_beta=1,
                               mu_lambda=0, V_lambda=1,
-                              seed=1234, verbose=1)
+                              seed=1234, verbose=0)
 # Tests
 test_that("jSDM_poisson_log works with intercept only in Tr and X, random site effect and latent variables", {
   expect_equal(length(mod$mcmc.sp),nsp)

@@ -9,7 +9,7 @@
 #' @aliases jSDM_gaussian
 #' @title Binomial probit regression 
 #' @description The \code{jSDM_gaussian} function performs a linear regression in a Bayesian framework. 
-#' The function calls a Gibbs sampler written in C++ code which uses conjugate priors to estimate the conditional posterior distribution of model's parameters.
+#' The function calls a Gibbs sampler written in 'C++' code which uses conjugate priors to estimate the conditional posterior distribution of model's parameters.
 #' @param burnin The number of burnin iterations for the sampler.
 #' @param mcmc The number of Gibbs iterations for the sampler. Total number of Gibbs iterations is equal to \code{burnin+mcmc}.
 #' \code{burnin+mcmc} must be divisible by 10 and superior or equal to 100 so that the progress bar can be displayed.
@@ -151,6 +151,7 @@
 #' Jeanne Clément <jeanne.clement16@laposte.net> 
 #' 
 #' @importFrom MASS mvrnorm
+#' @importFrom stats na.pass
 #' @seealso \code{\link[coda]{plot.mcmc}}, \code{\link[coda]{summary.mcmc}} \code{\link{jSDM_binomial_logit}} \code{\link{jSDM_poisson_log}} 
 #' \code{\link{jSDM_binomial_probit_sp_constrained}} \code{\link{jSDM_binomial_probit}}
 #' @examples
@@ -164,10 +165,10 @@
 #' library(jSDM)
 #' 
 #' #==================
-#' #' #== Data simulation
+#' #== Data simulation
 #' 
 #' #= Number of sites
-#' nsite <- 150
+#' nsite <- 100
 #' 
 #' #= Set seed for repeatability
 #' seed <- 1234
@@ -245,9 +246,8 @@
 #' #== Outputs
 #' 
 #' #= Parameter estimates
-#' 
+#' oldpar <- par(no.readonly = TRUE)
 #' ## beta_j
-#' # summary(mod$mcmc.sp$sp_1[,1:ncol(X)])
 #' mean_beta <- matrix(0,nsp,ncol(X))
 #' pdf(file=file.path(tempdir(), "Posteriors_beta_jSDM_probit.pdf"))
 #' par(mfrow=c(ncol(X),2))
@@ -264,8 +264,6 @@
 #' dev.off()
 #' 
 #' ## lambda_j
-#' # summary(mod$mcmc.sp$sp_1[,(ncol(X)+1):(ncol(X)+n_latent)])
-#' # summary(mod$mcmc.sp$sp_2[,(ncol(X)+1):(ncol(X)+n_latent)])
 #' mean_lambda <- matrix(0,nsp,n_latent)
 #' pdf(file=file.path(tempdir(), "Posteriors_lambda_jSDM_probit.pdf"))
 #' par(mfrow=c(n_latent*2,2))
@@ -304,7 +302,6 @@
 #' }
 #' 
 #' ## alpha
-#' # summary(mod$mcmc.alpha)
 #' par(mfrow=c(1,3))
 #' plot(alpha.target, summary(mod$mcmc.alpha)[[1]][,"Mean"],
 #'      xlab ="obs", ylab ="fitted", main="site effect alpha")
@@ -327,11 +324,11 @@
 #' plot(mod$mcmc.Deviance)
 #' 
 #' #= Predictions
-#' # summary(mod$Y_pred)
 #' par(mfrow=c(1,1))
 #' plot(Y, mod$Y_pred,
 #'      main="Response variable",xlab="obs",ylab="fitted")
 #' abline(a=0,b=1,col='red')
+#' par(oldpar)
 #' 
 #' @keywords linear regression biodiversity JSDM hierarchical Bayesian models MCMC Markov Chains Monte Carlo Gibbs Sampling
 #' @export 
@@ -375,13 +372,14 @@ jSDM_gaussian <- function(#Iteration
   }
   
   #==== Site formula suitability ====
-  mf.suit <- model.frame(formula=site_formula, data=as.data.frame(site_data))
+  mf.suit <- model.frame(formula=site_formula, data=as.data.frame(site_data),
+                         na.action=na.pass) # X will contain NA's in rows corresponding to site_data.
   X <- model.matrix(attr(mf.suit,"terms"), data=mf.suit)
   np <- ncol(X)
   n_Xint <- sum(sapply(apply(X,2,unique), FUN=function(x){all(x==1)}))
   col_Xint <- which(sapply(apply(X,2,unique), FUN=function(x){all(x==1)}))
   if(n_Xint!=1){
-    cat("Error: The model must include one species intercept to be interpretable.\n")
+    message("Error: The model must include one species intercept to be interpretable.\n")
     stop("Please respecify the site_formula formula and call ", calling.function(), " again.",
          call.=FALSE)
   }
@@ -457,7 +455,7 @@ jSDM_gaussian <- function(#Iteration
     ##======== with latent variables ======
     if(n_latent>0 && site_effect=="none"){
       if (nsp==1) {
-        cat("Error: Unable to adjust latent variables from data about only one species.\n n_latent must be equal to 0 with a single species.\n")
+        message("Error: Unable to adjust latent variables from data about only one species.\n n_latent must be equal to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -540,7 +538,7 @@ jSDM_gaussian <- function(#Iteration
     ##======== with fixed site effect ======
     if(n_latent==0 && site_effect=="fixed"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to none with a single species.\n")
+        message("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to none with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -610,7 +608,7 @@ jSDM_gaussian <- function(#Iteration
     if(n_latent==0 && site_effect=="random"){
       
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to none with a single species.\n")
+        message("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to none with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -682,7 +680,7 @@ jSDM_gaussian <- function(#Iteration
     ##======== with lv and fixed site effect======
     if(n_latent>0 && site_effect=="fixed"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
+        message("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -771,7 +769,7 @@ jSDM_gaussian <- function(#Iteration
     ##======== with lv and random site effect======
     if(n_latent>0 && site_effect=="random"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
+        message("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -868,7 +866,7 @@ jSDM_gaussian <- function(#Iteration
   #====== function with traits ======
   if(!is.null(trait_data)){
     if (nsp==1) {
-      cat("Error: Unable to estimate the influence of species-specific traits on species' responses from data about only one species.\n
+      message("Error: Unable to estimate the influence of species-specific traits on species' responses from data about only one species.\n
           trait_data should not be specified with a single species.\n")
       stop("Please respecify and call ", calling.function(), " again.",
            call.=FALSE)
@@ -903,7 +901,7 @@ jSDM_gaussian <- function(#Iteration
       n_Tint <- sum(sapply(apply(Tr,2,unique), FUN=function(x){all(x==1)}))
       col_Tint <- which(sapply(apply(Tr,2,unique), FUN=function(x){all(x==1)}))
       if(n_Tint!=1) {
-        cat("Error: The model must include one trait intercept to be interpretable.\n")
+        message("Error: The model must include one trait intercept to be interpretable.\n")
         stop("Please respecify the trait_formula formula and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -1098,7 +1096,7 @@ jSDM_gaussian <- function(#Iteration
     ##======== with fixed site effect ======
     if(n_latent==0 && site_effect=="fixed"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to none with a single species.\n")
+        message("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to none with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -1186,7 +1184,7 @@ jSDM_gaussian <- function(#Iteration
     if(n_latent==0 && site_effect=="random"){
       
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to none with a single species.\n")
+        message("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to none with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -1279,7 +1277,7 @@ jSDM_gaussian <- function(#Iteration
     ##======== with lv and fixed site effect======
     if(n_latent>0 && site_effect=="fixed"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
+        message("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -1388,7 +1386,7 @@ jSDM_gaussian <- function(#Iteration
     ##======== with lv and random site effect======
     if(n_latent>0 && site_effect=="random"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
+        message("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }

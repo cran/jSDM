@@ -271,7 +271,7 @@ We visually evaluate the convergence of MCMCs by representing the trace and dens
 
 ```{r plot-results-probit}
 np <- nrow(mod_frogs_jSDM_probit$model_spec$beta_start)
-
+oldpar <- par(no.readonly = TRUE)
 ## beta_j of the first two species
 par(mfrow=c(2,2))
 for (j in 1:2) {
@@ -327,6 +327,7 @@ hist(mod_frogs_jSDM_probit$probit_theta_latent,
 hist(mod_frogs_jSDM_probit$theta_latent,
      main = "Predicted theta", 
      xlab ="predicted theta")
+par(oldpar)
 ```
 
 Overall, the traces and the densities of the parameters indicate the convergence of the algorithm. Indeed, we observe on the traces that the values oscillate around averages without showing an upward or downward trend and we see that the densities are quite smooth and for the most part of Gaussian form.

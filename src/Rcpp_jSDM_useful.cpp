@@ -88,7 +88,7 @@ double betadens_logit (double beta_jk, void *dens_data) {
     logit_theta += d->X(i,k) * beta_jk;
     double theta = invlogit(logit_theta);
     /* log Likelihood */
-    logL += R::dbinom(d->Y(i,j), d->T(i),  theta, 1);
+    logL += R::dbinom(d->Y(i,j), d->N(i),  theta, 1);
   } // loop on sites 
   
   // logPosterior = logL + logPrior
@@ -123,7 +123,7 @@ double lambdadens_logit (double lambda_jq, void *dens_data) {
     logit_theta += d->W_run(i,q) * lambda_jq;
     double theta = invlogit(logit_theta);
     /* log Likelihood */
-    logL += R::dbinom(d->Y(i,j), d->T(i),  theta, 1);
+    logL += R::dbinom(d->Y(i,j), d->N(i),  theta, 1);
   } // loop on sites 
   
   // logPosterior = logL + logPrior
@@ -157,7 +157,7 @@ double lambdaUdens_logit (double lambda_jq, void *dens_data) {
     logit_theta += d->W_run(i,q) * lambda_jq;
     double theta = invlogit(logit_theta);
     /* log Likelihood */
-    logL += R::dbinom(d->Y(i,j), d->T(i),  theta, 1);
+    logL += R::dbinom(d->Y(i,j), d->N(i),  theta, 1);
   } // loop on sites 
   
   // logPosterior = logL + logPrior
@@ -188,7 +188,7 @@ double alphadens_logit(double alpha_i, void *dens_data) {
     logit_theta += alpha_i; 
     double theta = invlogit(logit_theta);
     /* log Likelihood */
-    logL += R::dbinom(d->Y(i,j), d->T(i),  theta, 1);
+    logL += R::dbinom(d->Y(i,j), d->N(i),  theta, 1);
   } // loop on species
   
   // logPosterior = logL + logPrior
@@ -223,7 +223,7 @@ double Wdens_logit (double W_iq, void *dens_data) {
     logit_theta += W_iq * d->lambda_run(q,j) ;
     double theta = invlogit(logit_theta);
     /* log Likelihood */
-    logL += R::dbinom(d->Y(i,j), d->T(i),  theta, 1);
+    logL += R::dbinom(d->Y(i,j), d->N(i),  theta, 1);
   } // loop on species
   
   // logPosterior = logL + logPrior
@@ -234,8 +234,8 @@ double Wdens_logit (double W_iq, void *dens_data) {
 /* betadens_pois */
 double betadens_pois (double beta_jk, void *dens_data) {
   // Pointer to the structure: d
-  dens_par *d;
-  d = static_cast<dens_par *> (dens_data);
+  dens_par_pois *d;
+  d = static_cast<dens_par_pois *> (dens_data);
   // Indicating the rank and the species of the parameter of interest
   int k = d->pos_beta;
   int j = d->sp_beta;
@@ -271,8 +271,8 @@ double betadens_pois (double beta_jk, void *dens_data) {
 /* lambdadens_pois */
 double lambdadens_pois (double lambda_jq, void *dens_data) {
   // Pointer to the structure: d
-  dens_par *d;
-  d = static_cast<dens_par *> (dens_data);
+  dens_par_pois *d;
+  d = static_cast<dens_par_pois *> (dens_data);
   // Indicating the rank and the species of the parameter of interest
   int q = d->pos_lambda;
   int j = d->sp_lambda;
@@ -305,8 +305,8 @@ double lambdadens_pois (double lambda_jq, void *dens_data) {
 
 double lambdaUdens_pois (double lambda_jq, void *dens_data) {
   // Pointer to the structure: d
-  dens_par *d;
-  d = static_cast<dens_par *> (dens_data);
+  dens_par_pois *d;
+  d = static_cast<dens_par_pois *> (dens_data);
   // Indicating the rank and the species of the parameter of interest
   int q = d->pos_lambda;
   int j = d->sp_lambda;
@@ -340,8 +340,8 @@ double lambdaUdens_pois (double lambda_jq, void *dens_data) {
 /* alphadens_pois */
 double alphadens_pois(double alpha_i, void *dens_data) {
   // Pointer to the structure: d
-  dens_par *d;
-  d = static_cast<dens_par *> (dens_data);
+  dens_par_pois *d;
+  d = static_cast<dens_par_pois *> (dens_data);
   // Indicating the site of the parameter of interest
   int i = d->site_alpha;
   // logLikelihood
@@ -371,8 +371,8 @@ double alphadens_pois(double alpha_i, void *dens_data) {
 /* Wdens_pois */
 double Wdens_pois (double W_iq, void *dens_data) {
   // Pointer to the structure: d
-  dens_par *d;
-  d = static_cast<dens_par *> (dens_data);
+  dens_par_pois *d;
+  d = static_cast<dens_par_pois *> (dens_data);
   // Indicating the rank and the species of the parameter of interest
   int i = d->site_W;
   int q = d->pos_W;

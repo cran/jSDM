@@ -37,14 +37,11 @@
 #' Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>
 #' 
 #' Jeanne Clément <jeanne.clement16@laposte.net>
+#' @references Hui FKC (2016). boral: Bayesian Ordination and Regression Analysis of Multivariate Abundance Data in R. \emph{Methods in Ecology and Evolution}, 7, 744–750. \cr
 #' 
-#' @references  
-#' Hui FKC (2016). “boral: Bayesian Ordination and Regression Analysis of Multivariate Abundance Data in R.” \emph{Methods in Ecology and Evolution}, 7, 744–750.
+#' Ovaskainen and al. (2016). Using latent variable models to identify large networks of species-to-species associations at different spatial scales. \emph{Methods in Ecology and Evolution}, 7, 549-555. \cr
 #' 
-#' Ovaskainen et al. (2016). Using latent variable models to identify large networks of species-to-species associations at different spatial scales. \emph{Methods in Ecology and Evolution}, 7, 549-555.
-#' 
-#' Pollock et al. (2014). Understanding co-occurrence by modelling species simultaneously with a Joint Species Distribution Model (JSDM). \emph{Methods in Ecology and Evolution}, 5, 397-406.
-#' 
+#' Pollock and al. (2014). Understanding co-occurrence by modelling species simultaneously with a Joint Species Distribution Model (JSDM). \emph{Methods in Ecology and Evolution}, 5, 397-406. \cr
 #' @seealso \code{\link{get_enviro_cor}} \code{\link[stats]{cov2cor}} \code{\link{jSDM-package}} \code{\link{jSDM_binomial_probit}} \cr 
 #'  \code{\link{jSDM_binomial_logit}}  \code{\link{jSDM_poisson_log}} 
 #' @examples 
@@ -106,19 +103,19 @@ get_residual_cor <- function(mod, prob=0.95, type="mean") {
     stop("Please provide an object of class jSDM in", calling.function(), call.=FALSE)
   }
   if(mod$model_spec$n_latent==0) {
-    cat("Error: The jSDM class object provided is not a latent variable model (LVM).\n
+    message("Error: The jSDM class object provided is not a latent variable model (LVM).\n
         The factor loadings needed to compute the residual correlation matrix have not been estimated. \n")
     stop("Please fit a LVM on your data and call ", calling.function(), " again.",
          call.=FALSE)
   }
   if(mod$model_spec$n_latent==1) {
-    cat("Error: Residual correlation matrix is reliably modeled only with two or more latent variables. \n")
+    message("Error: Residual correlation matrix is reliably modeled only with two or more latent variables. \n")
     stop("Please fit a LVM with n_latent > 1 on your data and call ", calling.function(), " again.",
          call.=FALSE)
   }
   
   if(prob>1 || prob<0) {
-    cat("Error: The target probability coverage of the intervals must be in the interval ]0,1[. \n")
+    message("Error: The target probability coverage of the intervals must be in the interval ]0,1[. \n")
     stop("Please specify a probability for prob and call ", calling.function(), " again.",
          call.=FALSE)
   }
@@ -188,8 +185,8 @@ get_residual_cor <- function(mod, prob=0.95, type="mean") {
   dimnames(cov.lower) <- dimnames(cov.upper) <- dimnames(sig.Tau.mat) <- list(names.sp, names.sp)
   ## Average/Median over the MCMC samples
   if (type == "median") {
-  Tau.mat.median <-  matrix(apply(Tau.arr,2,median),n.species,byrow=F)
-  Tau.cor.median <- matrix(apply(Tau.cor.arr,2,median),n.species,byrow=F)
+  Tau.mat.median <-  matrix(apply(Tau.arr,2,median),n.species, byrow=FALSE)
+  Tau.cor.median <- matrix(apply(Tau.cor.arr,2,median),n.species, byrow=FALSE)
   dimnames(Tau.cor.median) <- dimnames(Tau.mat.median) <- list(names.sp, names.sp)
   # Results 
   results <- list(cov.median = Tau.mat.median,
@@ -198,8 +195,8 @@ get_residual_cor <- function(mod, prob=0.95, type="mean") {
                   cor.lower=cor.lower, cor.upper=cor.upper, cor.sig=sig.Tau.cor)
   }
   if (type == "mean") {
-  Tau.mat.mean <-  matrix(apply(Tau.arr,2,mean),n.species,byrow=F)
-  Tau.cor.mean <- matrix(apply(Tau.cor.arr,2,mean),n.species,byrow=F)
+  Tau.mat.mean <-  matrix(apply(Tau.arr,2,mean),n.species, byrow=FALSE)
+  Tau.cor.mean <- matrix(apply(Tau.cor.arr,2,mean),n.species, byrow=FALSE)
   dimnames(Tau.cor.mean) <- dimnames(Tau.mat.mean) <- list(names.sp, names.sp)
   # Results 
   results <- list(cov.mean = Tau.mat.mean, 

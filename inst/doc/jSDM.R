@@ -57,7 +57,7 @@ mod_frogs_jSDM_probit <- jSDM_binomial_probit(
 
 ## ----plot-results-probit------------------------------------------------------
 np <- nrow(mod_frogs_jSDM_probit$model_spec$beta_start)
-
+oldpar <- par(no.readonly = TRUE)
 ## beta_j of the first two species
 par(mfrow=c(2,2))
 for (j in 1:2) {
@@ -113,6 +113,7 @@ hist(mod_frogs_jSDM_probit$probit_theta_latent,
 hist(mod_frogs_jSDM_probit$theta_latent,
      main = "Predicted theta", 
      xlab ="predicted theta")
+par(oldpar)
 
 ## ----correlation-matrix-probit------------------------------------------------
 plot_residual_cor(mod_frogs_jSDM_probit)

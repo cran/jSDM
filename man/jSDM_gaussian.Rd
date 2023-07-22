@@ -157,7 +157,7 @@ The \code{mcmc.} objects can be summarized by functions provided by the \code{co
 }
 \description{
 The \code{jSDM_gaussian} function performs a linear regression in a Bayesian framework. 
-The function calls a Gibbs sampler written in C++ code which uses conjugate priors to estimate the conditional posterior distribution of model's parameters.
+The function calls a Gibbs sampler written in 'C++' code which uses conjugate priors to estimate the conditional posterior distribution of model's parameters.
 }
 \details{
 We model an ecological process where the continuous data \eqn{y_ij} about the species \eqn{j} and the site \eqn{i} is explained by habitat suitability.
@@ -212,10 +212,10 @@ We define the matrix \eqn{\gamma=(\gamma_{kp})_{k=1,...,nt}^{p=1,...,np}}{\gamma
 library(jSDM)
 
 #==================
-#' #== Data simulation
+#== Data simulation
 
 #= Number of sites
-nsite <- 150
+nsite <- 100
 
 #= Set seed for repeatability
 seed <- 1234
@@ -293,9 +293,8 @@ Y <- matrix(rnorm(nsite*nsp, theta.target, sqrt(V.target)), nrow=nsite)
 #== Outputs
 
 #= Parameter estimates
-
+oldpar <- par(no.readonly = TRUE)
 ## beta_j
-# summary(mod$mcmc.sp$sp_1[,1:ncol(X)])
 mean_beta <- matrix(0,nsp,ncol(X))
 pdf(file=file.path(tempdir(), "Posteriors_beta_jSDM_probit.pdf"))
 par(mfrow=c(ncol(X),2))
@@ -312,8 +311,6 @@ for (j in 1:nsp) {
 dev.off()
 
 ## lambda_j
-# summary(mod$mcmc.sp$sp_1[,(ncol(X)+1):(ncol(X)+n_latent)])
-# summary(mod$mcmc.sp$sp_2[,(ncol(X)+1):(ncol(X)+n_latent)])
 mean_lambda <- matrix(0,nsp,n_latent)
 pdf(file=file.path(tempdir(), "Posteriors_lambda_jSDM_probit.pdf"))
 par(mfrow=c(n_latent*2,2))
@@ -352,7 +349,6 @@ for (l in 1:n_latent) {
 }
 
 ## alpha
-# summary(mod$mcmc.alpha)
 par(mfrow=c(1,3))
 plot(alpha.target, summary(mod$mcmc.alpha)[[1]][,"Mean"],
      xlab ="obs", ylab ="fitted", main="site effect alpha")
@@ -375,11 +371,11 @@ summary(mod$mcmc.Deviance)
 plot(mod$mcmc.Deviance)
 
 #= Predictions
-# summary(mod$Y_pred)
 par(mfrow=c(1,1))
 plot(Y, mod$Y_pred,
      main="Response variable",xlab="obs",ylab="fitted")
 abline(a=0,b=1,col='red')
+par(oldpar)
 
 }
 \references{

@@ -8,7 +8,7 @@
 #' @name jSDM_binomial_logit
 #' @aliases jSDM_binomial_logit
 #' @title Binomial logistic regression 
-#' @description The \code{jSDM_binomial_logit} function performs a Binomial logistic regression in a Bayesian framework. The function calls a Gibbs sampler written in C++ code which uses an adaptive Metropolis algorithm to estimate the conditional posterior distribution of model's parameters.
+#' @description The \code{jSDM_binomial_logit} function performs a Binomial logistic regression in a Bayesian framework. The function calls a Gibbs sampler written in 'C++' code which uses an adaptive Metropolis algorithm to estimate the conditional posterior distribution of model's parameters.
 #'
 #'
 #' @param burnin The number of burnin iterations for the sampler.
@@ -133,7 +133,8 @@
 #'   \tab \emph{average} \tab \tab \tab \tab \tab \tab \cr 
 #'   \tab \emph{trait effect} \tab \tab interaction \tab traits \tab environment \tab \tab \cr 
 #' }
-#' 
+#' @importFrom stats na.pass
+#'
 #' @examples #==============================================
 #' # jSDM_binomial_logit()
 #' # Example with simulated data
@@ -147,9 +148,9 @@
 #' #== Data simulation
 #' 
 #' #= Number of sites
-#' nsite <- 100
+#' nsite <- 50
 #' #= Number of species
-#' nsp <- 20
+#' nsp <- 10
 #' #= Set seed for repeatability
 #' seed <- 1234
 #' 
@@ -216,7 +217,7 @@
 #' #== Outputs
 #' 
 #' #= Parameter estimates
-#' 
+#' oldpar <- par(no.readonly = TRUE)
 #' ## beta_j
 #' # summary(mod$mcmc.sp$sp_1[,1:ncol(X)])
 #' mean_beta <- matrix(0,nsp,np)
@@ -237,8 +238,6 @@
 #' dev.off()
 #' 
 #' ## lambda_j
-#' # summary(mod$mcmc.sp$sp_1[,(ncol(X)+1):(ncol(X)+n_latent)])
-#' # summary(mod$mcmc.sp$sp_2[,(ncol(X)+1):(ncol(X)+n_latent)])
 #' mean_lambda <- matrix(0,nsp,n_latent)
 #' pdf(file=file.path(tempdir(), "Posteriors_lambda_jSDM_logit.pdf"))
 #' par(mfrow=c(n_latent*2,2))
@@ -277,23 +276,20 @@
 #' }
 #' 
 #' ## alpha
-#' # summary(mod$mcmc.alpha)
 #' par(mfrow=c(1,3))
 #' plot(alpha.target, summary(mod$mcmc.alpha)[[1]][,"Mean"],
 #'      xlab ="obs", ylab ="fitted", main="site effect alpha")
 #' abline(a=0,b=1,col='red')
 #' ## Valpha
-#' # summary(mod$mcmc.V_alpha)
 #' coda::traceplot(mod$mcmc.V_alpha)
 #' coda::densplot(mod$mcmc.V_alpha)
 #' abline(v=V_alpha.target,col='red')
 #' 
 #' ## Deviance
-#' # summary(mod$mcmc.Deviance)
+#' summary(mod$mcmc.Deviance)
 #' plot(mod$mcmc.Deviance)
 #' 
 #' #= Predictions
-#' # summary(mod$theta_latent)
 #' par(mfrow=c(1,2))
 #' plot(logit.theta, mod$logit_theta_latent,
 #'      main="logit(theta)",
@@ -303,6 +299,7 @@
 #'      main="Probabilities of occurence theta",
 #'      xlab="obs", ylab="fitted")
 #' abline(a=0 ,b=1, col="red")
+#' par(oldpar)
 #'@references 
 #' Gelfand, A. E.; Schmidt, A. M.; Wu, S.; Silander, J. A.; Latimer, A. and Rebelo, A. G. (2005) Modelling species diversity through species level hierarchical modelling. \emph{Applied Statistics}, 54, 1-20.
 #' 
@@ -360,18 +357,19 @@ jSDM_binomial_logit <- function(# Iteration
     rownames(Y) <- 1:nrow(Y)
   }
   if(!is.null(trials)){
-    T <- as.vector(trials)
+    N <- as.vector(trials)
   } else {
-    T <- rep(1,nsite)
+    N <- rep(1,nsite)
   }  
   #==== Site formula suitability ====
-  mf.suit <- model.frame(formula=site_formula, data=as.data.frame(site_data))
+  mf.suit <- model.frame(formula=site_formula, data=as.data.frame(site_data),
+                         na.action=na.pass) # X will contain NA's in rows corresponding to site_data.
   X <- model.matrix(attr(mf.suit,"terms"), data=mf.suit)
   np <- ncol(X)
   n_Xint <- sum(sapply(apply(X,2,unique), FUN=function(x){all(x==1)}))
   col_Xint <- which(sapply(apply(X,2,unique), FUN=function(x){all(x==1)}))
   if(n_Xint!=1){
-    cat("Error: The model must include one species intercept to be interpretable.\n")
+    message("Error: The model must include one species intercept to be interpretable.\n")
     stop("Please respecify the site_formula formula and call ", calling.function(), " again.",
          call.=FALSE)
   }
@@ -383,8 +381,8 @@ jSDM_binomial_logit <- function(# Iteration
   nsamp <- mcmc/thin
   
   #========== Check data ==========
-  check.T.binomial(T, nsite)
-  check.Y.binomial(c(Y), replicate(nsp,T))
+  check.N.binomial(N, nsite)
+  check.Y.binomial(c(Y), replicate(nsp,N))
   check.X(as.matrix(X), nsite)
   
   #======== function without traits ========
@@ -396,12 +394,12 @@ jSDM_binomial_logit <- function(# Iteration
       beta_start <- form.beta.start.sp(beta_start, np, nsp)
       
       # Form and check priors
-      mu_beta <- check.mubeta(mu_beta,np)
-      V_beta <- check.Vbeta(V_beta,np)
+      mu_beta <- check.mubeta(mu_beta, np)
+      V_beta <- check.Vbeta(V_beta, np)
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                      Y=Y,T=T, X=as.matrix(X),
+                                      Y=Y, N=N, X=as.matrix(X),
                                       beta_start=beta_start, mu_beta = mu_beta, V_beta=V_beta,
                                       ropt=ropt, seed=seed, verbose=verbose)
       
@@ -439,8 +437,8 @@ jSDM_binomial_logit <- function(# Iteration
     ##======== with latent variables ======
     if(n_latent>0 && site_effect=="none"){
       
-      if (nsp==1) {
-        cat("Error: Unable to adjust latent variables from data about only one species.\n n_latent must be equal to 0 with a single species.\n")
+      if (nsp==1){
+        message("Error: Unable to adjust latent variables from data about only one species.\n n_latent must be equal to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -459,7 +457,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_lv(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                         Y=Y,T=T, X=as.matrix(X),
+                                         Y=Y,N=N, X=as.matrix(X),
                                          beta_start=beta_start, mu_beta = mubeta, V_beta=V_beta,
                                          lambda_start=lambda_start, mu_lambda = mulambda, V_lambda=Vlambda,
                                          W_start = W_start, V_W = V_W,
@@ -512,7 +510,7 @@ jSDM_binomial_logit <- function(# Iteration
     ##======== with random site effect ======
     if(n_latent==0 && site_effect=="random"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to 'none' with a single species.\n")
+        message("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to 'none' with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -528,7 +526,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_rand_site(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                                Y=Y,T=T, X=as.matrix(X),
+                                                Y=Y,N=N, X=as.matrix(X),
                                                 beta_start=beta_start, mu_beta = mubeta, V_beta=V_beta,
                                                 alpha_start=alpha_start, V_alpha_start=V_alpha,
                                                 shape_Valpha=shape_Valpha, rate_Valpha=rate_Valpha,
@@ -576,7 +574,7 @@ jSDM_binomial_logit <- function(# Iteration
     ##======== with fixed site effect ======
     if(n_latent==0 && site_effect=="fixed"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to 'none' with a single species.\n")
+        message("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to 'none' with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -591,7 +589,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_fixed_site(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                                 Y=Y,T=T, X=as.matrix(X),
+                                                 Y=Y,N=N, X=as.matrix(X),
                                                  beta_start=beta_start, mu_beta = mubeta, V_beta=V_beta,
                                                  alpha_start=alpha_start, V_alpha=V_alpha, 
                                                  ropt=ropt, seed=seed, verbose=verbose)
@@ -635,7 +633,7 @@ jSDM_binomial_logit <- function(# Iteration
     ##======== with lv and fixed site effect======
     if(n_latent>0 && site_effect=="fixed"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
+        message("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -656,7 +654,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_fixed_site_lv(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                                    Y=Y,T=T, X=as.matrix(X),
+                                                    Y=Y,N=N, X=as.matrix(X),
                                                     beta_start=beta_start, mu_beta = mubeta, V_beta=V_beta,
                                                     lambda_start=lambda_start, mu_lambda = mulambda, V_lambda=Vlambda,
                                                     W_start = W_start, V_W = V_W,
@@ -715,7 +713,7 @@ jSDM_binomial_logit <- function(# Iteration
     ##======== with lv and random site effect======
     if(n_latent>0 && site_effect=="random"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
+        message("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -736,7 +734,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_rand_site_lv(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                                   Y=Y,T=T, X=as.matrix(X),
+                                                   Y=Y,N=N, X=as.matrix(X),
                                                    beta_start=beta_start, mu_beta = mubeta, V_beta=V_beta,
                                                    lambda_start=lambda_start, mu_lambda = mulambda, V_lambda=Vlambda,
                                                    W_start = W_start, V_W = V_W,
@@ -799,7 +797,7 @@ jSDM_binomial_logit <- function(# Iteration
   #======== function with traits ========
   if(!is.null(trait_data)){
     if (nsp==1) {
-      cat("Error: Unable to estimate the influence of species-specific traits on species' responses from data about only one species.\n
+      message("Error: Unable to estimate the influence of species-specific traits on species' responses from data about only one species.\n
           trait_data should not be specified with a single species.\n")
       stop("Please respecify and call ", calling.function(), " again.",
            call.=FALSE)
@@ -834,7 +832,7 @@ jSDM_binomial_logit <- function(# Iteration
       n_Tint <- sum(sapply(apply(Tr,2,unique), FUN=function(x){all(x==1)}))
       col_Tint <- which(sapply(apply(Tr,2,unique), FUN=function(x){all(x==1)}))
       if(n_Tint!=1) {
-        cat("Error: The model must include one trait intercept to be interpretable.\n")
+        message("Error: The model must include one trait intercept to be interpretable.\n")
         stop("Please respecify the trait_formula formula and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -869,7 +867,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_traits(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                             Y=Y,T=T, X=as.matrix(X), Tr=as.matrix(Tr),
+                                             Y=Y,N=N, X=as.matrix(X), Tr=as.matrix(Tr),
                                              beta_start=beta_start,
                                              V_beta=V_beta,
                                              gamma_start=gamma_start,
@@ -927,7 +925,7 @@ jSDM_binomial_logit <- function(# Iteration
     if(n_latent>0 && site_effect=="none"){
       
       if (nsp==1) {
-        cat("Error: Unable to adjust latent variables from data about only one species.\n n_latent must be equal to 0 with a single species.\n")
+        message("Error: Unable to adjust latent variables from data about only one species.\n n_latent must be equal to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -948,7 +946,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_traits_lv(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                                Y=Y,T=T, X=as.matrix(X), Tr=as.matrix(Tr),
+                                                Y=Y,N=N, X=as.matrix(X), Tr=as.matrix(Tr),
                                                 beta_start=beta_start,
                                                 V_beta=V_beta,
                                                 gamma_start=gamma_start,
@@ -1021,7 +1019,7 @@ jSDM_binomial_logit <- function(# Iteration
     ##======== with random site effect ======
     if(n_latent==0 && site_effect=="random"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to 'none' with a single species.\n")
+        message("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to 'none' with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -1039,7 +1037,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_traits_rand_site(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                                       Y=Y,T=T, X=as.matrix(X), Tr=as.matrix(Tr),
+                                                       Y=Y,N=N, X=as.matrix(X), Tr=as.matrix(Tr),
                                                        beta_start=beta_start,
                                                        V_beta=V_beta,
                                                        gamma_start=gamma_start,
@@ -1107,7 +1105,7 @@ jSDM_binomial_logit <- function(# Iteration
     ##======== with fixed site effect ======
     if(n_latent==0 && site_effect=="fixed"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to 'none' with a single species.\n")
+        message("Error: Unable to adjust site effect from data about only one species.\n site_effect must be equal to 'none' with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -1124,7 +1122,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_traits_fixed_site(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                                        Y=Y,T=T, X=as.matrix(X), Tr=as.matrix(Tr),
+                                                        Y=Y,N=N, X=as.matrix(X), Tr=as.matrix(Tr),
                                                         beta_start=beta_start,
                                                         V_beta=V_beta,
                                                         gamma_start=gamma_start,
@@ -1186,7 +1184,7 @@ jSDM_binomial_logit <- function(# Iteration
     ##======== with lv and fixed site effect======
     if(n_latent>0 && site_effect=="fixed"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
+        message("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -1209,7 +1207,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_traits_fixed_site_lv(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                                           Y=Y,T=T, X=as.matrix(X), Tr=as.matrix(Tr),
+                                                           Y=Y,N=N, X=as.matrix(X), Tr=as.matrix(Tr),
                                                            beta_start=beta_start,
                                                            V_beta=V_beta,
                                                            gamma_start=gamma_start,
@@ -1290,7 +1288,7 @@ jSDM_binomial_logit <- function(# Iteration
     ##======== with lv and random site effect======
     if(n_latent>0 && site_effect=="random"){
       if (nsp==1) {
-        cat("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
+        message("Error: Unable to adjust site effect and latent variables from data about only one species.\n site_effect must be equal to 'none' and n_latent to 0 with a single species.\n")
         stop("Please respecify and call ", calling.function(), " again.",
              call.=FALSE)
       }
@@ -1313,7 +1311,7 @@ jSDM_binomial_logit <- function(# Iteration
       
       # call Rcpp function
       mod <- Rcpp_jSDM_binomial_logit_traits_rand_site_lv(ngibbs=ngibbs, nthin=nthin, nburn=nburn,
-                                                          Y=Y,T=T, X=as.matrix(X), Tr=as.matrix(Tr),
+                                                          Y=Y, N=N, X=as.matrix(X), Tr=as.matrix(Tr),
                                                           beta_start=beta_start,
                                                           V_beta=V_beta,
                                                           gamma_start=gamma_start,
